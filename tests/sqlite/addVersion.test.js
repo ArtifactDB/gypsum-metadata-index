@@ -22,14 +22,16 @@ test("Basic addition of a new version", () => {
     expect(vpayload[0].version).toBe('whee');
     expect(vpayload[0].latest).toBe(1);
 
-    const ppayload = db.prepare("SELECT * FROM paths").all();
+    const ppayload = db.prepare("SELECT pid, vid, path, json_extract(metadata, '$') as metadata FROM paths").all();
     expect(ppayload.length).toBe(2);
     expect(ppayload[0].pid).toBe(1);
     expect(ppayload[0].vid).toBe(1);
     expect(ppayload[0].path).toBe("a.txt");
+    expect(JSON.parse(ppayload[0].metadata).title).toBe("Chicken tikka masala");
     expect(ppayload[1].pid).toBe(2);
     expect(ppayload[1].vid).toBe(1);
     expect(ppayload[1].path).toBe("b/c.txt");
+    expect(JSON.parse(ppayload[1].metadata).first_name).toBe("Marcille");
 
     let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
     expect(tpayload.length).toBe(1);

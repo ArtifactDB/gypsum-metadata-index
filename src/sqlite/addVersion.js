@@ -10,7 +10,7 @@ export function addVersion(db, project, asset, version, latest, metadata, tokeni
     const vid = vinfo.vid;
 
     for (const [p, m] of Object.entries(metadata)) {
-        let pinfo = db.prepare("INSERT INTO paths(vid, path) VALUES(?, ?) RETURNING pid").get(vid, p);
+        let pinfo = db.prepare("INSERT INTO paths(vid, path, metadata) VALUES(?, ?, jsonb(?)) RETURNING pid").get(vid, p, JSON.stringify(m));
         let pid = pinfo.pid;
         traverse_metadata(db, pid, m, null, tokenizable);
     }
