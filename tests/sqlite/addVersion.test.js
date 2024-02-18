@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as utils from "./utils.js";
 import Database from "better-sqlite3"
-import { addVersion } from "../src/addVersion.js"; 
-import { createTables } from "../src/createTables.js"; 
+import { addVersion } from "../../src/sqlite/addVersion.js"; 
+import { createTables } from "../../src/sqlite/createTables.js"; 
 
 test("Basic addition of a new version", () => {
     const testdir = utils.setupTestDirectory("addVersion");
