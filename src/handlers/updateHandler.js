@@ -64,11 +64,14 @@ export async function updateHandler(db_paths, last_modified, read_logs, read_met
             }
 
         } else if (type == "delete-asset") {
+            const project = l.log.project;
+            const asset = l.log.asset;
             for (const e of to_extract) {
                 deleteAsset(db_handles[e], project, asset);
             }
 
         } else if (type == "delete-project") {
+            const project = l.log.project;
             for (const e of to_extract) {
                 deleteProject(db_handles[e], project);
             }
