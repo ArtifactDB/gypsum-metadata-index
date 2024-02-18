@@ -30,5 +30,30 @@ export const mockMetadata = {
         "likes": [ "seafood", "nuts" ],
         "dislikes": [ "weird food" ],
         "description": "Marcille is an elven mage and member of Laios' party.",
+    },
+    "illustrious": {
+        "aircraft": 36,
+        "length": 225.6,
+        "beam": 29.2,
+        "speed": 56,
+        "complement": 1299,
+        "dates": {
+            "comissioned": "1940-05-25",
+            "decomissioned": "1955-02"
+        },
+        "motto": "Vox non incerta"
+    },
+    "macrophage": {
+        "description": "A type of white blood cell that surrounds and kills microorganisms, removes dead cells, and stimulates the action of other immune system cells.",
+        "lineage": {
+            "name": "monocytes",
+            "from": {
+                "name": "myeloid progenitor cells",
+                "from": {
+                    "name": "hematopoietic stem cells"
+                }
+            }
+        },
+        "friends": [ "megakaryocytes", "dendritic cells", "neutrophils" ]
     }
 };
