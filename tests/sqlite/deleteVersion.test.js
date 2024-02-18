@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as utils from "./utils.js";
+import * as utils from "../utils.js";
 import Database from "better-sqlite3"
 import { addVersion } from "../../src/sqlite/addVersion.js"; 
 import { deleteVersion } from "../../src/sqlite/deleteVersion.js"; 
@@ -11,8 +11,8 @@ test("Versions can be deleted", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata2() }, new Set);
-    addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata1() }, new Set);
+    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] }, new Set);
+    addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata["chicken"] }, new Set);
 
     let tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
     expect(tpayload1.length).toBe(1);

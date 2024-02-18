@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as utils from "../sqlite/utils.js";
+import * as utils from "../utils.js";
 import { listVersions } from "../../src/local/listVersions.js";
 
 test("listVersions works correctly", () => {

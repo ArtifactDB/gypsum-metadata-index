@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as utils from "./utils.js";
+import * as utils from "../utils.js";
 import Database from "better-sqlite3"
 import { addVersion } from "../../src/sqlite/addVersion.js"; 
 import { createTables } from "../../src/sqlite/createTables.js"; 
@@ -10,7 +10,7 @@ test("Basic addition of a new version", () => {
     let db = Database(opath);
     createTables(db);
 
-    const meta = { "a.txt": utils.mockMetadata1(), "b/c.txt": utils.mockMetadata2() };
+    const meta = { "a.txt": utils.mockMetadata["chicken"], "b/c.txt": utils.mockMetadata["marcille"] };
     addVersion(db, "foo", "bar", "whee", true, meta, new Set);
 
     // Checking that all the pieces were added.
@@ -50,7 +50,7 @@ test("New version can be added multiple times", () => {
     let db = Database(opath);
     createTables(db);
 
-    let meta = { "a.txt": utils.mockMetadata1() };
+    let meta = { "a.txt": utils.mockMetadata["chicken"] };
     addVersion(db, "foo", "bar", "whee", true, meta, new Set);
 
     let tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'cream'").all();
@@ -59,7 +59,7 @@ test("New version can be added multiple times", () => {
     expect(tpayload2.length).toBe(0);
 
     // Second addition deletes all existing entries in an cascading manner.
-    meta = { "aa.txt": utils.mockMetadata2() };
+    meta = { "aa.txt": utils.mockMetadata["marcille"] };
     addVersion(db, "foo", "bar", "whee", true, meta, new Set);
 
     tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'cream'").all();
@@ -93,8 +93,8 @@ test("Version addition responds to tokenization", () => {
     createTables(db);
 
     let tokable = new Set(["description"]);
-    addVersion(db, "foo", "bar", "gastly", true, { "recipe.json": utils.mockMetadata1() }, tokable);
-    addVersion(db, "foo", "bar", "haunter", true, { "best_girl.txt": utils.mockMetadata2() }, tokable);
+    addVersion(db, "foo", "bar", "gastly", true, { "recipe.json": utils.mockMetadata["chicken"] }, tokable);
+    addVersion(db, "foo", "bar", "haunter", true, { "best_girl.txt": utils.mockMetadata["marcille"] }, tokable);
 
     let tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'creamy'").all();
     expect(tpayload1.length).toBe(1);
