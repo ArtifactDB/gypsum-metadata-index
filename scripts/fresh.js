@@ -27,6 +27,6 @@ const { list_projects, list_assets, list_versions, find_latest, read_summary, re
 // between now and completion of the index, we catch them in the updates. This
 // is okay as all logged operations are idempotent from our perspective; we're
 // just (re)aligning with whatever's in the bucket.
-fs.writeFileSync(path.join(args.values.outputs, "modified"), String((new Date).getTime()))
+fs.writeFileSync(path.join(dir, "modified"), String((new Date).getTime()))
 
 await freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);

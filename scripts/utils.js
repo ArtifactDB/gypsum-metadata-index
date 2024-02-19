@@ -8,7 +8,7 @@ export function parseConfigurations(configs, dir) {
     for (const cpath of configs) {
         let config = JSON.parse(fs.readFileSync(cpath, { encoding: "utf8" }));
         db_paths[config.file_name] = path.join(dir, config.db_name);
-        db_tokenizable[config.file_name] = config.tokenizable;
+        db_tokenizable[config.file_name] = new Set(config.tokenizable);
     }
     return { db_paths, db_tokenizable };
 }
@@ -16,13 +16,14 @@ export function parseConfigurations(configs, dir) {
 export function chooseSourceFunctions(registry) {
     if (registry) {
         return {
-            list_projects: () => local.listProjects(args.values.registry),
-            list_assets: (project) => local.listProjects(args.values.registry, project),
-            list_versions: (project, asset) => local.listProjects(args.values.registry, project, asset),
-            read_logs: since => local.readLogs(args.values.registry, since),
-            read_summary: (project, asset, version) => local.readSummary(args.values.registry, project, asset, version, to_extract),
-            read_metadata: (project, asset, version, to_extract) => local.readMetadata(args.values.registry, project, asset, version, to_extract),
-            find_latest: (project, asset) => local.findLatest(args.values.registry, project, asset),
+            list_projects: () => local.listProjects(registry),
+            list_assets: (project) => local.listAssets(registry, project),
+            list_versions: (project, asset) => local.listVersions(registry, project, asset),
+            list_logs: since => local.listLogs(registry, since),
+            read_log: name => local.readLog(registry, name),
+            read_summary: (project, asset, version) => local.readSummary(registry, project, asset, version),
+            read_metadata: (project, asset, version, to_extract) => local.readMetadata(registry, project, asset, version, to_extract),
+            find_latest: (project, asset) => local.fetchLatest(registry, project, asset),
         };
     } else {
         throw new Error("non-registry arguments are not yet supported");
