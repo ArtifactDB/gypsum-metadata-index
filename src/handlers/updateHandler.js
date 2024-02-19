@@ -89,4 +89,6 @@ export async function updateHandler(db_paths, last_modified, read_logs, read_met
             throw new Error("unknown update action type '" + type + "'");
         }
     }
+
+    return logs;
 }
