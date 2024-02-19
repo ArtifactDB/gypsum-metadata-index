@@ -31,8 +31,12 @@ export function readLogs(registry, since) {
             continue;
         }
 
-        const contents = fs.readFileSync(path.join(logdir, l), { encoding: 'utf8', flag: 'r' });
-        output.push({ time: parsed, log: JSON.parse(contents) });
+        try { 
+            const contents = fs.readFileSync(path.join(logdir, l), { encoding: 'utf8', flag: 'r' });
+            output.push({ name: l, time: parsed, log: JSON.parse(contents) });
+        } catch (err) {
+            throw new Error("failed to parse log '" + l + "'", { cause: err });
+        }
     }
 
     return output;

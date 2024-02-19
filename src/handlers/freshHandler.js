@@ -16,7 +16,11 @@ export async function freshHandler(db_paths, list_projects, list_assets, list_ve
 
     const all_projects = await list_projects();
     for (const project of all_projects) {
-        await internal_freshProject(db_handles, project, list_assets, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);
+        try {
+            await internal_freshProject(db_handles, project, list_assets, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);
+        } catch (err) {
+            throw new Error("failed to add project '" + project + "'", { cause: err });
+        }
     }
 }
 
@@ -24,7 +28,11 @@ export async function freshHandler(db_paths, list_projects, list_assets, list_ve
 export async function internal_freshProject(db_handles, project, list_assets, list_versions, find_latest, read_summary, read_metadata, db_tokenizable) {
     const all_assets = await list_assets(project);
     for (const asset of all_assets) {
-        await internal_freshAsset(db_handles, project, asset, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);
+        try {
+            await internal_freshAsset(db_handles, project, asset, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);
+        } catch (err) {
+            throw new Error("failed to add asset '" + asset + "'", { cause: err });
+        }
     }
 }
 
@@ -35,7 +43,11 @@ export async function internal_freshAsset(db_handles, project, asset, list_versi
     }
     const all_versions = await list_versions(project, asset);
     for (const version of all_versions) {
-        await internal_freshVersion(db_handles, project, asset, version, latest, read_summary, read_metadata, db_tokenizable);
+        try {
+            await internal_freshVersion(db_handles, project, asset, version, latest, read_summary, read_metadata, db_tokenizable);
+        } catch (err) {
+            throw new Error("failed to add version '" + version + "'", { cause: err });
+        }
     }
 }
 
@@ -46,6 +58,10 @@ export async function internal_freshVersion(db_handles, project, asset, version,
     }
     const output = await read_metadata(project, asset, version, Object.keys(db_handles));
     for (const [e, db] of Object.entries(db_handles)) {
-        addVersion(db, project, asset, version, (latest == version), output[e], db_tokenizable[e]);
+        try {
+            addVersion(db, project, asset, version, (latest == version), output[e], db_tokenizable[e]);
+        } catch (err) {
+            throw new Error("failed to add to database '" + e + "'", { cause: err });
+        } 
     }
 }
