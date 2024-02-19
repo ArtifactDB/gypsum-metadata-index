@@ -6,7 +6,7 @@ export async function listLogs(url, threshold) {
     let accumulated = [];
     await quickList(
         url,
-        { Prefix: prefix, StartAfter: threshold }, 
+        { Prefix: prefix, StartAfter: prefix + threshold }, 
         resp => {
             if ("Contents" in resp) {
                 for (const x of resp.Contents) {

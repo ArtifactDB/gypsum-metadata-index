@@ -40,14 +40,14 @@ export async function quickList(url, params, fun) {
 }
 
 export async function fetchFile(url, key, { mustWork = true } = {}) {
-    const { bucket, client } = await s3.setupS3(url);
+    const { bucket, client } = await setupS3(url);
 
     try {
         // Need the await here for the try/catch to work properly.
         return await client.send(new GetObjectCommand({Bucket: bucket, Key: key }));
     } catch (e) {
         if (mustWork) {
-            throw new Error("failed to fetch '" + key + "'; " + e.message);
+            throw new Error("failed to fetch '" + key + "'", { cause: e });
         } else {
             return null;
         }

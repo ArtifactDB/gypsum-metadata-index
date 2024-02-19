@@ -1,10 +1,12 @@
-import { fetchJson } from "./utils.js";
+import { fetchFile, fetchJson } from "./utils.js";
 
-export async function readMetadata(url, project, asset, version, to_extract) {
+export async function readMetadata(url, project, asset, version, to_extract, { parse = true } = {}) {
     const output = {};
     for (const s of to_extract) {
         output[s] = {};
     }
+
+    const fun = (parse ? fetchJson : (url, key) => fetchFile(url, key).then(x => x.Body.transformToString("utf-8")));
 
     let manifest = await fetchJson(url, project + "/" + asset + "/" + version + "/..manifest");
     for (const [k, v] of Object.entries(manifest)) {
@@ -15,7 +17,7 @@ export async function readMetadata(url, project, asset, version, to_extract) {
 
             let key;
             if ("link" in v) {
-                let target = v.target;
+                let target = v.link;
                 if ("ancestor" in target) {
                     target = target.ancestor;
                 }
@@ -24,9 +26,9 @@ export async function readMetadata(url, project, asset, version, to_extract) {
                 key = project + "/" + asset + "/" + version + "/" + k;
             }
 
-            output[base][dir] = await fetchJson(url, key);
+            output[base][dir] = await fun(url, key);
         }
     }
 
-    return accumulated;
+    return output;
 }

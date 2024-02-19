@@ -1,7 +1,7 @@
 import { fetchJson } from "./utils.js";
 
-export function fetchLatest(url, project, asset) {
-    const found = fetchJson(url, project + "/" + asset + "/..latest", { mustWork: false });
+export async function fetchLatest(url, project, asset) {
+    const found = await fetchJson(url, project + "/" + asset + "/..latest", { mustWork: false });
     if (found == null) {
         return null;
     }
