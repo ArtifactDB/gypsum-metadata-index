@@ -19,7 +19,8 @@ export async function freshHandler(db_paths, list_projects, list_assets, list_ve
         try {
             await internal_freshProject(db_handles, project, list_assets, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);
         } catch (err) {
-            throw new Error("failed to add project '" + project + "'", { cause: err });
+            // Just report the error and keep going so that we don't stall at a single broken project. 
+            console.error(new Error("failed to add project '" + project + "'", { cause: err }));
         }
     }
 }
