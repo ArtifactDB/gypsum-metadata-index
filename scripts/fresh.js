@@ -1,4 +1,4 @@
-import { freshHandler } from "../../src/handlers/freshHandler.js";
+import { freshHandler } from "../src/handlers/freshHandler.js";
 import { parseArgs } from "node:util";
 import * as fs from "fs";
 import * as path from "path";

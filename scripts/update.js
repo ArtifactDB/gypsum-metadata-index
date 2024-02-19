@@ -1,4 +1,4 @@
-import { updateHandler } from "../../src/handlers/updateHandler.js";
+import { updateHandler } from "../src/handlers/updateHandler.js";
 import { parseArgs } from "node:util";
 import * as fs from "fs";
 import * as path from "path";
@@ -21,7 +21,7 @@ const args = parseArgs({
 
 const dir = utils.required(args, "dir");
 const { db_paths, db_tokenizable } = utils.parseConfigurations(utils.required(args, "config"), dir);
-const { read_logs, read_metadata, find_latest } = utils.chooseSourceFunctions(utils.optional(args, "registry")):
+const { read_logs, read_metadata, find_latest } = utils.chooseSourceFunctions(utils.optional(args, "registry"));
 
 let lastmod_path = path.join(dir, "modified");
 let lastmod = new Date(Number(fs.readFileSync(lastmod_path)));

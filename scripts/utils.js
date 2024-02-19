@@ -1,4 +1,4 @@
-import * as local from "../../src/local/index.js";
+import * as local from "../src/local/index.js";
 import * as fs from "fs";
 import * as path from "path";
 
