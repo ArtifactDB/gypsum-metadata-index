@@ -23,7 +23,6 @@ test("update script works correctly", () => {
     const db0 = path.join(args.indices, "stuff.sqlite3");
     const con0 = new Database(db0);
     let output = con0.prepare("SELECT * FROM versions").all();
-    console.log(output);
     expect(output.length).toBe(1);
     expect(output[0].version).toBe("v2");
 
