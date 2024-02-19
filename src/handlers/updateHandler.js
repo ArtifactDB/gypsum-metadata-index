@@ -42,7 +42,8 @@ export async function readLogs(last_modified, list_logs, read_log) {
             const contents = await read_log(l);
             logs.push({ name: l, time: parsed, log: contents });
         } catch (err) {
-            throw new Error("failed to parse log '" + l + "'", { cause: err });
+            // Report the error but keep going so that we don't stall at a single broken log.
+            console.err(new Error("failed to parse log '" + l + "'", { cause: err }));
         }
     }
 
@@ -121,7 +122,8 @@ export async function updateHandler(db_paths, last_modified, list_logs, read_log
                 throw new Error("unknown update action type '" + type + "'");
             }
         } catch (err) {
-            throw new Error("failed update for '" + l.name + "' ('" + JSON.stringify(parameters) + "')", { cause: err });
+            // Report the error but keep going so that we don't stall at a single broken log.
+            console.error(new Error("failed update for '" + l.name + "' ('" + JSON.stringify(parameters) + "')", { cause: err }));
         }
     }
 
