@@ -2,8 +2,53 @@ import * as path from "path";
 import * as utils from "../utils.js";
 import { createTables } from "../../src/sqlite/createTables.js";
 import { addVersion } from "../../src/sqlite/addVersion.js";
-import { updateHandler } from "../../src/handlers/updateHandler.js";
+import { updateHandler, readLogs } from "../../src/handlers/updateHandler.js";
 import Database from "better-sqlite3";
+
+test("readLogs reports logs correctly", async () => {
+    const logs = {
+        "2021-02-19T05:21:42.12+08:00_000000": { "type": "foo" },
+        "2021-02-19T05:21:42.12-08:00_000000": { "type": "bar" },
+        "2021-02-19T05:21:42.12+03:00_000000": { "type": "stuff" },
+        "2021-02-15T06:21:12.47+08:00_000000": { "type": "whee" },
+        "2021-02-21T19:01:54.98-08:00_000000": { "type": "blah" }
+    };
+
+    const lister = (threshold) => (Object.keys(logs).filter(k => k > threshold));
+    const reader = (n) => logs[n];
+
+    let everything = await readLogs(new Date("2020-02-18T00:00:00Z"), lister, reader);
+    everything.sort((a, b) => a.time - b.time);
+    expect(everything.map(y => y.log.type)).toEqual([ "whee", "foo", "stuff", "bar", "blah" ]);
+
+    let filtered = await readLogs(new Date("2021-02-18T00:00:00Z"), lister, reader); 
+    filtered.sort((a, b) => a.time - b.time);
+    expect(filtered.map(y => y.log.type)).toEqual([ "foo", "stuff", "bar", "blah" ]);
+
+    filtered = await readLogs(new Date("2021-02-19T05:21:42.12Z"), lister, reader); 
+    filtered.sort((a, b) => a.time - b.time);
+    expect(filtered.map(y => y.log.type)).toEqual([ "bar", "blah" ]);
+
+    filtered = await readLogs(new Date("2021-02-20T00:00:00+11:00"), lister, reader); 
+    filtered.sort((a, b) => a.time - b.time);
+    expect(filtered.map(y => y.log.type)).toEqual([ "bar", "blah" ]);
+
+    filtered = await readLogs(new Date("2021-02-21T01:13:54.98+01:00"), lister, reader); 
+    filtered.sort((a, b) => a.time - b.time);
+    expect(filtered.map(y => y.log.type)).toEqual([ "blah" ]);
+
+    // Skips ill-formed logs.
+    const badlogs = {
+        "2021-02-19T05:21:42.12+08:00_000000": { "type": "foo" },
+        "2021-02-19T05:21:42.12+08:00": { "type": "bar" },
+        "asdasdasd": { "type": "whee" }
+    };
+
+    const badlister = (threshold) => (Object.keys(badlogs).filter(k => k > threshold));
+    const badreader = (n) => badlogs[n];
+    let badeverything = await readLogs(new Date("2020-02-18T00:00:00Z"), badlister, badreader);
+    expect(badeverything.map(y => y.log.type)).toEqual([ "foo" ]);
+})
 
 test("updateHandler adds versions correctly", async () => {
     const testdir = utils.setupTestDirectory("updateHandler");
@@ -18,20 +63,20 @@ test("updateHandler adds versions correctly", async () => {
         all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
+    const now = new Date;
+    const logname1 = new Date(now.getTime() + 100).toISOString() + "_000000";
+    const logname2 = new Date(now.getTime() + 10).toISOString() + "_000000";
+
     await updateHandler(
         all_paths, 
-        new Date,
-        (threshold) => {
-            return [
-                {
-                    time: new Date(threshold.getTime() + 100),
-                    log: { type: "add-version", project: "test", asset: "foo", version: "whee" }
-                },
-                {
-                    time: new Date(threshold.getTime() + 10),
-                    log: { type: "add-version", project: "retest", asset: "stuff", version: "bar", latest: true }
-                }
-            ]
+        now, 
+        (threshold) => [ logname1, logname2 ],
+        (name) => {
+            if (name == logname1) {
+                return { type: "add-version", project: "test", asset: "foo", version: "whee" };
+            } else {
+                return { type: "add-version", project: "retest", asset: "stuff", version: "bar", latest: true };
+            }
         },
         (project, asset, version, to_extract) => {
             if (project == "test") {
@@ -124,15 +169,16 @@ test("updateHandler deletes versions correctly", async () => {
         all_tokenizable[p] = new Set;
     }
 
+    const now = new Date;
+    const logname = new Date(now.getTime() + 100).toISOString() + "_000000";
+
     // Deleting the middle version.
     await updateHandler(
         all_paths, 
-        new Date,
-        (threshold) => {
-            return [{
-                time: new Date(threshold.getTime() + 100),
-                log: { type: "delete-version", project: "test", asset: "foo", version: "v2" }
-            }]
+        now,
+        (threshold) => [logname],
+        (name) => {
+            return { type: "delete-version", project: "test", asset: "foo", version: "v2" };
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
@@ -159,12 +205,10 @@ test("updateHandler deletes versions correctly", async () => {
     // Deleting the latest version.
     await updateHandler(
         all_paths, 
-        new Date,
-        (threshold) => {
-            return [{
-                time: new Date(threshold.getTime() + 100),
-                log: { type: "delete-version", project: "test", asset: "foo", version: "v3", latest: true }
-            }]
+        now,
+        (threshold) => [logname],
+        (name) => { 
+            return { type: "delete-version", project: "test", asset: "foo", version: "v3", latest: true };
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
@@ -188,12 +232,10 @@ test("updateHandler deletes versions correctly", async () => {
     // Deleting the remaining version.
     await updateHandler(
         all_paths, 
-        new Date,
-        (threshold) => {
-            return [{
-                time: new Date(threshold.getTime() + 100),
-                log: { type: "delete-version", project: "test", asset: "foo", version: "v1", latest: true }
-            }]
+        now,
+        (threshold) => [logname],
+        (name) => { 
+            return { type: "delete-version", project: "test", asset: "foo", version: "v1", latest: true };
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
@@ -227,14 +269,15 @@ test("updateHandler deletes assets correctly", async () => {
         all_tokenizable[p] = new Set;
     }
 
+    const now = new Date;
+    const logname = new Date(now.getTime() + 100).toISOString() + "_000000";
+
     await updateHandler(
         all_paths, 
-        new Date,
-        (threshold) => {
-            return [{
-                time: new Date(threshold.getTime() + 100),
-                log: { type: "delete-asset", project: "test", asset: "bar" }
-            }]
+        now,
+        (threshold) => [logname],
+        (name ) => {
+            return { type: "delete-asset", project: "test", asset: "bar" };
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
@@ -270,14 +313,15 @@ test("updateHandler deletes projects correctly", async () => {
         all_tokenizable[p] = new Set;
     }
 
+    const now = new Date;
+    const logname = new Date(now.getTime() + 100).toISOString() + "_000000";
+
     await updateHandler(
         all_paths, 
-        new Date,
-        (threshold) => {
-            return [{
-                time: new Date(threshold.getTime() + 100),
-                log: { type: "delete-project", project: "test" }
-            }]
+        now,
+        (threshold) => [logname],
+        (name) => {
+            return { type: "delete-project", project: "test" };
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");

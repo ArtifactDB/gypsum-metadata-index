@@ -17,8 +17,34 @@ function is_latest(log) {
     return "latest" in log && log.latest;
 }
 
-export async function updateHandler(db_paths, last_modified, read_logs, read_metadata, find_latest, db_tokenizable) {
-    const logs = await read_logs(last_modified);
+// Only exported for testing purposes.
+export async function readLogs(last_modified, list_logs, read_log) {
+    // Subtracting a day to avoid problems with timezones.
+    let threshold_string = (new Date(last_modified.getTime() - 1000 * 60 * 60 * 24)).toISOString()
+    const log_list = await list_logs(threshold_string);
+
+    const logs = [];
+    for (const l of log_list) {
+        let i_ = l.indexOf("_")
+        if (i_ < 0) {
+            continue;
+        }
+
+        let parsed = new Date(l.slice(0, i_));
+        if (Number.isNaN(parsed)) {
+            continue;
+        }
+        if (parsed <= last_modified) {
+            continue;
+        }
+
+        try { 
+            const contents = await read_log(l);
+            logs.push({ name: l, time: parsed, log: contents });
+        } catch (err) {
+            throw new Error("failed to parse log '" + l + "'", { cause: err });
+        }
+    }
 
     // Need to make sure they're sorted so we execute the responses to the
     // actions in the right order.
@@ -34,12 +60,17 @@ export async function updateHandler(db_paths, last_modified, read_logs, read_met
         }
     }
 
+    return logs;
+}
+
+export async function updateHandler(db_paths, last_modified, list_logs, read_log, read_metadata, find_latest, db_tokenizable) {
     const db_handles = {};
     for (const [k, v] of Object.entries(db_paths)) {
         db_handles[k] = Database(v);
     }
     const to_extract = Object.keys(db_handles);
 
+    const logs = await readLogs(last_modified, list_logs, read_log);
     for (const l of logs) {
         const parameters = l.log;
         try {
