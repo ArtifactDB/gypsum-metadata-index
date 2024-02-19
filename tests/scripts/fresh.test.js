@@ -4,7 +4,7 @@ import Database from "better-sqlite3";
 import * as sutils from "./utils.js";
 import { execSync } from "child_process";
 
-test("fresh script works correctly without probation", () => {
+test("fresh script works correctly", () => {
     const args = sutils.mockEnvironment("fresh");
     execSync(`node ./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry}`);
 
