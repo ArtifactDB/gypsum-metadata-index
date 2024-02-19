@@ -19,7 +19,18 @@ function is_latest(log) {
 
 // Only exported for testing purposes.
 export async function readLogs(last_modified, list_logs, read_log) {
-    // Subtracting a day to avoid problems with timezones.
+    // Rewinding a day and using that as the threshold key. The idea is to
+    // potentially improve the efficiency of list_logs by skipping logs that we
+    // already processed, assuming that the list_logs function can benefit from
+    // listing logfiles with names that sort after the threshold key.
+    //
+    // Note, though, that this part is only approximate as the list_logs is not
+    // obliged to consider the threshold. Even if it did, an alphanumeric sort
+    // doesn't check for timezones or account for variable precision of
+    // fractional seconds. Hence, we rewind by a full day to be conservative
+    // and ensure that we only skip things that we must have already processed;
+    // for everything else, we still list the log files, extract the times and
+    // compare them manually to 'since' in the subsequent loop.
     let threshold_string = (new Date(last_modified.getTime() - 1000 * 60 * 60 * 24)).toISOString()
     const log_list = await list_logs(threshold_string);
 
