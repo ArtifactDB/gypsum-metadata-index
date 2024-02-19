@@ -5,6 +5,14 @@ import { deleteProject } from "../sqlite/deleteProject.js";
 import { setLatest } from "../sqlite/setLatest.js"; 
 import Database from "better-sqlite3"
 
+function safe_extract(x, p) {
+    if (p in x) {
+        return x[p];
+    } else {
+        throw new Error("expected a '" + p + "' property");
+    }
+}
+
 function is_latest(log) {
     return "latest" in log && log.latest;
 }
@@ -33,51 +41,52 @@ export async function updateHandler(db_paths, last_modified, read_logs, read_met
     const to_extract = Object.keys(db_handles);
 
     for (const l of logs) {
-        const type = l.log.type;
+        const parameters = l.log;
+        const type = safe_extract(parameters, "type");
 
         if (type == "add-version") {
-            const project = l.log.project;
-            const asset = l.log.asset;
-            const version = l.log.version;
+            const project = safe_extract(parameters, "project");
+            const asset = safe_extract(parameters, "asset");
+            const version = safe_extract(parameters, "version");
             let output = await read_metadata(project, asset, version, to_extract);
-            for (const e of to_extract) {
-                addVersion(db_handles[e], project, asset, version, is_latest(l.log), output[e], tokenizable);
+            for (const [e, db] of Object.entries(db_handles)) {
+                addVersion(db, project, asset, version, is_latest(parameters), output[e], tokenizable);
             }
 
         } else if (type == "delete-version") {
-            const project = l.log.project;
-            const asset = l.log.asset;
-            const version = l.log.version;
-            for (const e of to_extract) {
-                deleteVersion(db_handles[e], project, asset, version);
+            const project = safe_extract(parameters, "project");
+            const asset = safe_extract(parameters, "asset");
+            const version = safe_extract(parameters, "version");
+            for (const db of Object.values(db_handles)) {
+                deleteVersion(db, project, asset, version);
             }
 
             // If we just deleted the latest version, we need to reset the
             // previous version with the latest information.
-            if (is_latest(l.log)) {
+            if (is_latest(parameters)) {
                 const latest = await find_latest(project, asset);
                 if (latest != null) {
-                    for (const e of to_extract) {
-                        setLatest(db_handles[e], project, asset, latest);
+                    for (const db of Object.values(db_handles)) {
+                        setLatest(db, project, asset, latest);
                     }
                 }
             }
 
         } else if (type == "delete-asset") {
-            const project = l.log.project;
-            const asset = l.log.asset;
-            for (const e of to_extract) {
-                deleteAsset(db_handles[e], project, asset);
+            const project = safe_extract(parameters, "project");
+            const asset = safe_extract(parameters, "asset");
+            for (const db of Object.values(db_handles)) {
+                deleteAsset(db, project, asset);
             }
 
         } else if (type == "delete-project") {
-            const project = l.log.project;
-            for (const e of to_extract) {
-                deleteProject(db_handles[e], project);
+            const project = safe_extract(parameters, "project");
+            for (const db of Object.values(db_handles)) {
+                deleteProject(db, project);
             }
+
+        } else {
+            throw new Error("unknown update action type '" + type + "'");
         }
     }
-
-    return;
 }
-
