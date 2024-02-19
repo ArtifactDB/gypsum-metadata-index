@@ -7,12 +7,14 @@ import Database from "better-sqlite3";
 test("manualHandler works correctly", async () => {
     const testdir = utils.setupTestDirectory("manualHandler");
     let all_paths = {};
+    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
         createTables(db);
         db.close();
         all_paths[p] = opath;
+        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     // Set up the various functions.
@@ -58,7 +60,7 @@ test("manualHandler works correctly", async () => {
     };
 
     // Refreshing a single version.
-    await manualHandler(all_paths, "test", "foo", "bar1", listAssets, listVersions, findLatest, readSummary, readMetadata, new Set(["description", "motto"]));
+    await manualHandler(all_paths, "test", "foo", "bar1", listAssets, listVersions, findLatest, readSummary, readMetadata, all_tokenizable);
 
     for (const [x, p] of Object.entries(all_paths)) {
         const db = Database(p);
@@ -88,7 +90,7 @@ test("manualHandler works correctly", async () => {
     }
 
     // Refreshing a single asset.
-    await manualHandler(all_paths, "test", "foo", null, listAssets, listVersions, findLatest, readSummary, readMetadata, new Set(["description", "motto"]));
+    await manualHandler(all_paths, "test", "foo", null, listAssets, listVersions, findLatest, readSummary, readMetadata, all_tokenizable);
 
     for (const [x, p] of Object.entries(all_paths)) {
         const db = Database(p);
@@ -108,7 +110,7 @@ test("manualHandler works correctly", async () => {
     }
 
     // Refreshing a single project.
-    await manualHandler(all_paths, "test", null, null, listAssets, listVersions, findLatest, readSummary, readMetadata, new Set(["description", "motto"]));
+    await manualHandler(all_paths, "test", null, null, listAssets, listVersions, findLatest, readSummary, readMetadata, all_tokenizable);
 
     for (const [x, p] of Object.entries(all_paths)) {
         const db = Database(p);

@@ -17,7 +17,7 @@ function is_latest(log) {
     return "latest" in log && log.latest;
 }
 
-export async function updateHandler(db_paths, last_modified, read_logs, read_metadata, find_latest, tokenizable) {
+export async function updateHandler(db_paths, last_modified, read_logs, read_metadata, find_latest, db_tokenizable) {
     const logs = await read_logs(last_modified);
 
     // Need to make sure they're sorted so we execute the responses to the
@@ -50,7 +50,7 @@ export async function updateHandler(db_paths, last_modified, read_logs, read_met
             const version = safe_extract(parameters, "version");
             let output = await read_metadata(project, asset, version, to_extract);
             for (const [e, db] of Object.entries(db_handles)) {
-                addVersion(db, project, asset, version, is_latest(parameters), output[e], tokenizable);
+                addVersion(db, project, asset, version, is_latest(parameters), output[e], db_tokenizable[e]);
             }
 
         } else if (type == "delete-version") {

@@ -6,8 +6,10 @@ import Database from "better-sqlite3";
 test("freshHandler works correctly without probation", async () => {
     const testdir = utils.setupTestDirectory("freshHandler");
     let all_paths = {};
+    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         all_paths[p] = path.join(testdir, "test" + p + ".sqlite3")
+        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     await freshHandler(
@@ -53,7 +55,7 @@ test("freshHandler works correctly without probation", async () => {
                 }
             }
         },
-        new Set(["description", "motto"])
+        all_tokenizable
     );
 
     // Check that all versions are added, along with their metadata entries.
@@ -88,8 +90,10 @@ test("freshHandler works correctly without probation", async () => {
 test("freshHandler works correctly with probation", async () => {
     const testdir = utils.setupTestDirectory("freshHandler");
     let all_paths = {};
+    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         all_paths[p] = path.join(testdir, "test" + p + ".sqlite3")
+        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     await freshHandler(
@@ -129,7 +133,7 @@ test("freshHandler works correctly with probation", async () => {
                 "_alt": { "BBB/CCC.txt": utils.mockMetadata["chicken"] }
             }
         },
-        new Set(["description"])
+        all_tokenizable
     );
 
     // Check that all versions are added, along with their metadata entries.
