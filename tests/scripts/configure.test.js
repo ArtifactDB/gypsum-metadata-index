@@ -52,7 +52,6 @@ test("configure script works correctly", () => {
 
     let output = execSync(`node ./scripts/configure.js --schema ${schema_path} --file_name falin --db_name marcille`);
     const dec = new TextDecoder;
-    console.log(dec.decode(output));
     let parsed = JSON.parse(dec.decode(output));
     expect(parsed.file_name).toBe("falin");
     expect(parsed.db_name).toBe("marcille");
