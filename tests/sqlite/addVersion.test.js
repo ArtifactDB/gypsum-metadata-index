@@ -33,14 +33,14 @@ test("Basic addition of a new version", () => {
     expect(ppayload[1].path).toBe("b/c.txt");
     expect(JSON.parse(ppayload[1].metadata).first_name).toBe("Marcille");
 
-    let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+    let tpayload = utils.scanForToken(db, "chicken");
     expect(tpayload.length).toBe(1);
-    expect(tpayload[0].pid).toBe(1);
+    expect(tpayload[0].path).toBe("a.txt");
     expect(tpayload[0].field).toBe("ingredients.meat");
 
-    tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'Marcille'").all();
+    tpayload = utils.scanForToken(db, "Marcille");
     expect(tpayload.length).toBe(1);
-    expect(tpayload[0].pid).toBe(2);
+    expect(tpayload[0].path).toBe("b/c.txt");
     expect(tpayload[0].field).toBe("first_name");
 })
 
@@ -53,18 +53,18 @@ test("New version can be added multiple times", () => {
     let meta = { "a.txt": utils.mockMetadata["chicken"] };
     addVersion(db, "foo", "bar", "whee", true, meta, new Set);
 
-    let tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'cream'").all();
+    let tpayload1 = utils.scanForToken(db, "cream");
     expect(tpayload1.length).toBe(1);
-    let tpayload2 = db.prepare("SELECT * FROM tokens WHERE token = 'weird food'").all();
+    let tpayload2 = utils.scanForToken(db, "weird food");
     expect(tpayload2.length).toBe(0);
 
     // Second addition deletes all existing entries in an cascading manner.
     meta = { "aa.txt": utils.mockMetadata["marcille"] };
     addVersion(db, "foo", "bar", "whee", true, meta, new Set);
 
-    tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'cream'").all();
+    tpayload1 = utils.scanForToken(db, "cream");
     expect(tpayload1.length).toBe(0);
-    tpayload2 = db.prepare("SELECT * FROM tokens WHERE token = 'weird food'").all();
+    tpayload2 = utils.scanForToken(db, "weird food");
     expect(tpayload2.length).toBe(1);
 })
 
@@ -96,13 +96,13 @@ test("Version addition responds to tokenization", () => {
     addVersion(db, "foo", "bar", "gastly", true, { "recipe.json": utils.mockMetadata["chicken"] }, tokable);
     addVersion(db, "foo", "bar", "haunter", true, { "best_girl.txt": utils.mockMetadata["marcille"] }, tokable);
 
-    let tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'creamy'").all();
+    let tpayload1 = utils.scanForToken(db, "creamy");
     expect(tpayload1.length).toBe(1);
     expect(tpayload1[0].field).toBe("description");
-    expect(tpayload1[0].pid).toBe(1);
+    expect(tpayload1[0].path).toBe("recipe.json");
 
-    let tpayload2 = db.prepare("SELECT * FROM tokens WHERE token = 'laios'").all();
+    let tpayload2 = utils.scanForToken(db, "laios");
     expect(tpayload2.length).toBe(1);
     expect(tpayload2[0].field).toBe("description");
-    expect(tpayload2[0].pid).toBe(2);
+    expect(tpayload2[0].path).toBe("best_girl.txt");
 })

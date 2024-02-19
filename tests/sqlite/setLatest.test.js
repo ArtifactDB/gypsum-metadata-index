@@ -14,16 +14,15 @@ test("We can manually set a different latest version", () => {
     addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["chicken"] }, new Set);
     addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata["marcille"] }, new Set);
 
-    let tpayload1 = db.prepare("SELECT * FROM tokens LEFT JOIN paths ON paths.pid = tokens.pid LEFT JOIN versions ON paths.vid = versions.vid WHERE token = 'chicken' AND versions.latest = 1").all();
+    let tpayload1 = utils.scanForToken(db, "chicken", { latest: true });
     expect(tpayload1.length).toBe(0);
-    let tpayload2 = db.prepare("SELECT * FROM tokens LEFT JOIN paths ON paths.pid = tokens.pid LEFT JOIN versions ON paths.vid = versions.vid WHERE token = 'Marcille' AND versions.latest = 1").all();
+    let tpayload2 = utils.scanForToken(db, "Marcille", { latest: true });
     expect(tpayload2.length).toBe(1);
 
-    // Deletion cascades to all other tables.
     setLatest(db, "foo", "bar", "whee");
 
-    tpayload1 = db.prepare("SELECT * FROM tokens LEFT JOIN paths ON paths.pid = tokens.pid LEFT JOIN versions ON paths.vid = versions.vid WHERE token = 'chicken' AND versions.latest = 1").all();
+    tpayload1 = utils.scanForToken(db, "chicken", { latest: true });
     expect(tpayload1.length).toBe(1);
-    tpayload2 = db.prepare("SELECT * FROM tokens LEFT JOIN paths ON paths.pid = tokens.pid LEFT JOIN versions ON paths.vid = versions.vid WHERE token = 'Marcille' AND versions.latest = 1").all();
+    tpayload2 = utils.scanForToken(db, "Marcille", { latest: true });
     expect(tpayload2.length).toBe(0);
 })

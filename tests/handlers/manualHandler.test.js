@@ -72,14 +72,14 @@ test("manualHandler works correctly", async () => {
         expect(vpayload[0].version).toEqual("bar1");
         expect(vpayload[0].latest).toEqual(0);
 
-        let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'Donato'").all();
+        let tpayload = utils.scanForToken(db, 'Donato');
         if (x == "_meta") {
             expect(tpayload.length).toBeGreaterThan(0);
         } else {
             expect(tpayload.length).toEqual(0);
         }
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+        tpayload = utils.scanForToken(db, 'chicken');
         if (x == "_meta") {
             expect(tpayload.length).toEqual(0);
         } else {

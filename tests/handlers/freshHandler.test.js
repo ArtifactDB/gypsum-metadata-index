@@ -69,14 +69,14 @@ test("freshHandler works correctly without probation", async () => {
         expect(vpayload.map(x => x.version)).toEqual(["bar1", "bar2", "v1", "v1"]);
         expect(vpayload.map(x => x.latest)).toEqual([0, 1, 1, 1]);
 
-        let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'Donato'").all();
+        let tpayload = utils.scanForToken(db, 'Donato');
         if (x == "_meta") {
             expect(tpayload.length).toBeGreaterThan(0);
         } else {
             expect(tpayload.length).toEqual(0);
         }
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+        tpayload = utils.scanForToken(db, 'chicken');
         if (x == "_meta") {
             expect(tpayload.length).toEqual(0);
         } else {
@@ -147,14 +147,14 @@ test("freshHandler works correctly with probation", async () => {
         expect(vpayload[0].version).toBe("bar1");
         expect(vpayload[0].latest).toBe(1);
 
-        let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'Donato'").all();
+        let tpayload = utils.scanForToken(db, 'Donato');
         if (x == "_meta") {
             expect(tpayload.length).toBeGreaterThan(0);
         } else {
             expect(tpayload.length).toEqual(0);
         }
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+        tpayload = utils.scanForToken(db, 'chicken');
         if (x == "_meta") {
             expect(tpayload.length).toEqual(0);
         } else {

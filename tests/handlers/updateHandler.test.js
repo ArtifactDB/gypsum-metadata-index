@@ -117,38 +117,38 @@ test("updateHandler adds versions correctly", async () => {
     // Check that the correct metadata is inserted into each database.
     {
         const db = Database(all_paths["_meta"]);
-        let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'laios'").all();
+        let tpayload = utils.scanForToken(db, 'laios');
         expect(tpayload.length).toBe(1);
-        expect(tpayload[0].pid).toBe(3);
+        expect(tpayload[0].path).toBe("AAA.json");
         expect(tpayload[0].field).toBe("description");
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'vox'").all();
+        tpayload = utils.scanForToken(db, 'vox');
         expect(tpayload.length).toBe(1);
-        expect(tpayload[0].pid).toBe(1);
+        expect(tpayload[0].path).toBe("azur/CV.json");
         expect(tpayload[0].field).toBe("motto");
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'immune'").all();
+        tpayload = utils.scanForToken(db, 'immune');
         expect(tpayload.length).toBe(1);
-        expect(tpayload[0].pid).toBe(2);
+        expect(tpayload[0].path).toBe("thingy.csv");
         expect(tpayload[0].field).toBe("description");
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+        tpayload = utils.scanForToken(db, 'chicken');
         expect(tpayload.length).toBe(0);
     }
 
     {
         const db = Database(all_paths["_alt"]);
-        let tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'fish'").all();
+        let tpayload = utils.scanForToken(db, 'fish');
         expect(tpayload.length).toBe(1);
-        expect(tpayload[0].pid).toBe(2);
+        expect(tpayload[0].path).toBe("BBB/CCC.txt");
         expect(tpayload[0].field).toBe("variations");
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token LIKE '%stem cells%'").all();
+        tpayload = utils.scanForToken(db, '%stem cells%', { partial: true });
         expect(tpayload.length).toBe(1);
-        expect(tpayload[0].pid).toBe(1);
+        expect(tpayload[0].path).toBe("thingy.csv");
         expect(tpayload[0].field).toBe("lineage.from.from.name");
 
-        tpayload = db.prepare("SELECT * FROM tokens WHERE token = 'marcille'").all();
+        tpayload = utils.scanForToken(db, 'marcille');
         expect(tpayload.length).toBe(0);
     }
 })

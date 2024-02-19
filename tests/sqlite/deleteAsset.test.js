@@ -15,16 +15,16 @@ test("Assets can be deleted", () => {
     addVersion(db, "foo", "bar", "whee2", true, { "b.txt": utils.mockMetadata["marcille"] }, new Set);
     addVersion(db, "foo", "stuff", "whee", true, { "a.txt": utils.mockMetadata["chicken"] }, new Set);
 
-    let tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+    let tpayload1 = utils.scanForToken(db, "chicken");
     expect(tpayload1.length).toBe(1);
-    let tpayload2 = db.prepare("SELECT * FROM tokens WHERE token = 'Donato'").all();
+    let tpayload2 = utils.scanForToken(db, "Donato");
     expect(tpayload2.length).toBe(2);
 
     // Deletion cascades to all other tables.
     deleteAsset(db, "foo", "bar");
 
-    tpayload1 = db.prepare("SELECT * FROM tokens WHERE token = 'chicken'").all();
+    tpayload1 = utils.scanForToken(db, "chicken");
     expect(tpayload1.length).toBe(1);
-    tpayload2 = db.prepare("SELECT * FROM tokens WHERE token = 'Donato'").all();
+    tpayload2 = utils.scanForToken(db, "Donato");
     expect(tpayload2.length).toBe(0);
 })

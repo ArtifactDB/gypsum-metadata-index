@@ -57,3 +57,22 @@ export const mockMetadata = {
         "friends": [ "megakaryocytes", "dendritic cells", "neutrophils" ]
     }
 };
+
+export function scanForToken(db, token, { latest = false, partial = false } = {}) {
+    const cmd = [
+        "SELECT versions.project AS project, versions.asset AS asset, versions.version AS version, paths.path AS path, fields.field AS field FROM links",
+        "LEFT JOIN paths ON paths.pid == links.pid",
+        "LEFT JOIN versions ON versions.vid == paths.pid",
+        "LEFT JOIN tokens ON tokens.tid == links.tid",
+        "LEFT JOIN fields ON fields.fid == links.fid",
+    ];
+    if (partial) {
+        cmd.push("WHERE tokens.token LIKE ?")
+    } else {
+        cmd.push("WHERE tokens.token = ?")
+    }
+    if (latest) {
+        cmd.push("AND versions.latest = 1");
+    }
+    return db.prepare(cmd.join(" ")).all(token);
+}

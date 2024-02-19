@@ -32,10 +32,16 @@ function traverse_metadata(db, pid, metadata, property, tokenizable) {
         if (typeof metadata == "string" && tokenizable.has(property)) {
             let tokens = splitIntoTokens(metadata);
             for (const t of tokens) {
-                db.prepare("INSERT INTO tokens(pid, field, token) VALUES(?, ?, ?)").run(pid, property, t);
+                insert_token(db, pid, property, t);
             }
         } else {
-            db.prepare("INSERT INTO tokens(pid, field, token) VALUES(?, ?, ?)").run(pid, property, String(metadata));
+            insert_token(db, pid, property, String(metadata));
         }
     }
+}
+
+function insert_token(db, pid, field, token) {
+    db.prepare("INSERT OR IGNORE INTO tokens(token) VALUES(?)").run(token);
+    db.prepare("INSERT OR IGNORE INTO fields(field) VALUES(?)").run(field);
+    db.prepare("INSERT INTO links(pid, fid, tid) VALUES(?, (SELECT fid FROM fields WHERE field = ?), (SELECT tid FROM tokens WHERE token = ?))").run(pid, field, token);
 }
