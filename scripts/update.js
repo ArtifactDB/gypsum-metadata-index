@@ -30,5 +30,5 @@ let all_logs = await updateHandler(db_paths, lastmod, list_logs, read_log, read_
 // Storing the timestamp of the last processed job.
 if (all_logs.length) {
     let last_time = all_logs[all_logs.length - 1].time.getTime();
-    fs.writeFileSync(lastmod_path, String(last_event));
+    fs.writeFileSync(lastmod_path, String(last_time));
 }

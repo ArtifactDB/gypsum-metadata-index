@@ -8,15 +8,20 @@ export function mockEnvironment(name) {
     const regdir = path.join(testdir, "registry") 
     fs.mkdirSync(regdir);
     fs.mkdirSync(path.join(regdir, "foo", "bar"), { recursive: true });
-    fs.writeFileSync(path.join(regdir, "foo", "bar", "..latest"), JSON.stringify({ version: "whee" }));
-    fs.mkdirSync(path.join(regdir, "foo", "bar", "whee"));
-    fs.writeFileSync(path.join(regdir, "foo", "bar", "whee", "..summary"), JSON.stringify({ upload_user_id: "aaron" }));
-    fs.writeFileSync(path.join(regdir, "foo", "bar", "whee", "stuff.json"), JSON.stringify(utils.mockMetadata["chicken"]));
-    fs.mkdirSync(path.join(regdir, "foo", "bar", "whee", "blah"));
-    fs.writeFileSync(path.join(regdir, "foo", "bar", "whee", "blah", "stuff.json"), JSON.stringify(utils.mockMetadata["marcille"]));
-    fs.writeFileSync(path.join(regdir, "foo", "bar", "whee", "blah", "other.json"), JSON.stringify(utils.mockMetadata["illustrious"]));
-    fs.mkdirSync(path.join(regdir, "foo", "bar", "whee", "blah", "sub"));
-    fs.writeFileSync(path.join(regdir, "foo", "bar", "whee", "blah", "sub", "other.json"), JSON.stringify(utils.mockMetadata["macrophage"]));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "..latest"), JSON.stringify({ version: "v2" }));
+
+    fs.mkdirSync(path.join(regdir, "foo", "bar", "v1"));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "v1", "..summary"), JSON.stringify({ upload_user_id: "aaron" }));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "v1", "stuff.json"), JSON.stringify(utils.mockMetadata["chicken"]));
+    fs.mkdirSync(path.join(regdir, "foo", "bar", "v1", "blah"));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "v1", "blah", "other.json"), JSON.stringify(utils.mockMetadata["illustrious"]));
+
+    fs.mkdirSync(path.join(regdir, "foo", "bar", "v2"));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "v2", "..summary"), JSON.stringify({ upload_user_id: "aaron" }));
+    fs.mkdirSync(path.join(regdir, "foo", "bar", "v2", "blah"));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "v1", "blah", "stuff.json"), JSON.stringify(utils.mockMetadata["marcille"]));
+    fs.mkdirSync(path.join(regdir, "foo", "bar", "v2", "blah", "sub"));
+    fs.writeFileSync(path.join(regdir, "foo", "bar", "v2", "blah", "sub", "other.json"), JSON.stringify(utils.mockMetadata["macrophage"]));
 
     const confdir = path.join(testdir, "configs");
     fs.mkdirSync(confdir);
