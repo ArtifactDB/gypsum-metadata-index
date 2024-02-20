@@ -50,7 +50,7 @@ export async function internal_freshProject(db_handles, project, list_assets, li
 }
 
 export async function internal_freshAsset(db_handles, project, asset, list_versions, find_latest, read_summary, read_metadata, db_tokenizable) {
-    const latest = find_latest(project, asset);
+    const latest = await find_latest(project, asset);
     if (latest == null) { // short-circuit if latest=null, as that means that there are no non-probational versions.
         return; 
     }

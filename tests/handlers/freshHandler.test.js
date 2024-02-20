@@ -14,32 +14,32 @@ test("freshHandler works correctly without probation", async () => {
 
     await freshHandler(
         all_paths, 
-        () => [ "test", "retest" ],
-        project => {
+        async () => [ "test", "retest" ],
+        async project => {
             if (project == "test") {
                 return ["foo"];
             } else {
                 return ["whee", "stuff"];
             }
         },
-        (project, asset) => {
+        async (project, asset) => {
             if (project == "test") {
                 return ["bar1", "bar2"];
             } else {
                 return ["v1" ];
             }
         },
-        (project, asset) => {
+        async (project, asset) => {
             if (project == "test") {
                 return "bar2";
             } else {
                 return "v1";
             }
         },
-        (project, asset, version) => {
+        async (project, asset, version) => {
             return {};
         },
-        (project, asset, version, to_extract) => {
+        async (project, asset, version, to_extract) => {
             if (project == "test") {
                 return {
                     "_meta": { "AAA.json": utils.mockMetadata["marcille"] },
@@ -98,36 +98,36 @@ test("freshHandler works correctly with probation", async () => {
 
     await freshHandler(
         all_paths, 
-        () => [ "test", "retest" ],
-        project => {
+        async () => [ "test", "retest" ],
+        async project => {
             if (project == "test") {
                 return ["foo"];
             } else {
                 return ["whee", "stuff"];
             }
         },
-        (project, asset) => {
+        async (project, asset) => {
             if (project == "test") {
                 return ["bar1", "bar2"];
             } else {
                 return ["v1" ];
             }
         },
-        (project, asset) => {
+        async (project, asset) => {
             if (project == "test") {
                 return "bar1";
             } else {
                 return null; // i.e., no non-probational versions.
             }
         },
-        (project, asset, version) => {
+        async (project, asset, version) => {
             if (project == "test" && version == "bar2") {
                 return { on_probation: true }; // 'bar2' is not probational. 
             } else {
                 return {};
             }
         },
-        (project, asset, version, to_extract) => {
+        async (project, asset, version, to_extract) => {
             return {
                 "_meta": { "AAA.json": utils.mockMetadata["marcille"] },
                 "_alt": { "BBB/CCC.txt": utils.mockMetadata["chicken"] }
