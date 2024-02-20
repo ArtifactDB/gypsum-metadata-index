@@ -1,11 +1,10 @@
 {
   "private": true,
-  "name": "stringy-search",
+  "name": "stringy-sqlite-search",
   "version": "1.0.0",
   "type": "module",
-  "description": "Index string-based metadata into a SQLite database",
+  "description": "Index string-based metadata from a gypsum-compatible file store into a SQLite database.",
   "author": "LTLA <infinite.monkeys.with.keyboards@gmail.com>",
-  "main": "src/index.js",
   "license": "MIT",
   "scripts": {
     "test": "NODE_OPTIONS='--experimental-vm-modules --experimental-fetch' npx jest --testTimeout=100000"
