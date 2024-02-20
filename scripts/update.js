@@ -13,6 +13,9 @@ const args = parseArgs({
         registry: {
             type: "string",
         },
+        gypsum: {
+            type: "string",
+        },
         dir: {
             type: "string",
         }
