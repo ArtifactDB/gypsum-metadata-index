@@ -6,9 +6,10 @@ import * as sutils from "./utils.js";
 import { execSync } from "child_process";
 
 test("manual script works correctly", () => {
-    const tmp = utils.setupTestDirectory("manual");
     const args = sutils.mockEnvironment("manual");
 
+    // Creating an empty registry so that we can initialize the DBs with nothing in them.
+    const tmp = utils.setupTestDirectory("manual-empty");
     execSync(`node ./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${tmp}`);
     {
         execSync(`node ./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo --asset bar --version v1`);
