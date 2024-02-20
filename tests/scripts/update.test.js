@@ -6,7 +6,7 @@ import { execSync } from "child_process";
 
 test("update script works correctly", () => {
     const args = sutils.mockEnvironment("update");
-    execSync(`./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry}`);
+    execSync(`./scripts/fresh.js --class ${args.classs[0]} --class ${args.classs[1]} --dir ${args.indices} --registry ${args.registry}`);
 
     // Adding some juicy logs.
     const logdir = path.join(args.registry, "..logs");
@@ -18,7 +18,7 @@ test("update script works correctly", () => {
     const newer = new Date(now.getTime() + 100000);
     fs.writeFileSync(path.join(logdir, newer.toISOString() + "_000000"), '{ "type":"delete-version", "project":"foo", "asset":"bar", "version":"v1" }');
 
-    execSync(`./scripts/update.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry}`, {stdio: 'inherit'});
+    execSync(`./scripts/update.js --class ${args.classs[0]} --class ${args.classs[1]} --dir ${args.indices} --registry ${args.registry}`, {stdio: 'inherit'});
 
     const db0 = path.join(args.indices, "stuff.sqlite3");
     const con0 = new Database(db0);
@@ -30,6 +30,6 @@ test("update script works correctly", () => {
     expect(Number(fs.readFileSync(mod, { encoding: "utf8" }))).toEqual(newer.getTime());
 
     // Re-running works as expected.
-    execSync(`./scripts/update.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry}`);
+    execSync(`./scripts/update.js --class ${args.classs[0]} --class ${args.classs[1]} --dir ${args.indices} --registry ${args.registry}`);
     expect(Number(fs.readFileSync(mod, { encoding: "utf8" }))).toEqual(newer.getTime());
 })

@@ -7,7 +7,7 @@ import * as utils from "../utils.js";
 
 test("fresh script works correctly", () => {
     const args = sutils.mockEnvironment("fresh");
-    execSync(`./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry}`);
+    execSync(`./scripts/fresh.js --class ${args.classs[0]} --class ${args.classs[1]} --dir ${args.indices} --registry ${args.registry}`);
 
     const db0 = path.join(args.indices, "stuff.sqlite3");
     const con0 = new Database(db0);

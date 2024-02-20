@@ -8,7 +8,7 @@ import * as utils from "./utils.js";
 
 const args = parseArgs({
     options: {
-        config: {
+        class: {
             type: "string",
             multiple: true,
         },
@@ -33,7 +33,7 @@ const args = parseArgs({
     }
 });
 
-const db_paths = utils.parseConfigurations(utils.required(args, "config"), utils.required(args, "dir"));
+const db_paths = utils.parseConfigurations(utils.required(args, "class"), utils.required(args, "dir"));
 const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 await manualHandler(

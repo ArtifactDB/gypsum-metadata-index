@@ -8,7 +8,7 @@ import * as utils from "./utils.js";
 
 const args = parseArgs({
     options: {
-        config: {
+        class: {
             type: "string",
             multiple: true,
         },
@@ -25,7 +25,7 @@ const args = parseArgs({
 });
 
 const dir = utils.required(args, "dir");
-const db_paths = utils.parseConfigurations(utils.required(args, "config"), dir);
+const db_paths = utils.parseConfigurations(utils.required(args, "class"), dir);
 const { list_logs, read_log, read_metadata, find_latest } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 let lastmod_path = path.join(dir, "modified");

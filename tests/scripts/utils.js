@@ -27,7 +27,7 @@ export function mockEnvironment(name) {
     fs.mkdirSync(inddir);
     return {
         registry: regdir,
-        configs: ["stuff.json,stuff.sqlite3", "other.json,other.sqlite3"],
+        classs: ["stuff.json,stuff.sqlite3", "other.json,other.sqlite3"],
         indices: inddir,
     };
 }

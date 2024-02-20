@@ -8,7 +8,7 @@ import * as utils from "./utils.js";
 
 const args = parseArgs({
     options: {
-        config: {
+        class: {
             type: "string",
             multiple: true,
         },
@@ -25,7 +25,7 @@ const args = parseArgs({
 });
 
 const dir = utils.required(args, "dir");
-const db_paths = utils.parseConfigurations(utils.required(args, "config"), dir);
+const db_paths = utils.parseConfigurations(utils.required(args, "class"), dir);
 const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 // Creating the timestamp here, just so that if there are any operations
