@@ -25,12 +25,12 @@ const args = parseArgs({
 });
 
 const dir = utils.required(args, "dir");
-const { db_paths, db_tokenizable } = utils.parseConfigurations(utils.required(args, "config"), dir);
+const db_paths = utils.parseConfigurations(utils.required(args, "config"), dir);
 const { list_logs, read_log, read_metadata, find_latest } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 let lastmod_path = path.join(dir, "modified");
 let lastmod = new Date(Number(fs.readFileSync(lastmod_path)));
-let all_logs = await updateHandler(db_paths, lastmod, list_logs, read_log, read_metadata, find_latest, db_tokenizable);
+let all_logs = await updateHandler(db_paths, lastmod, list_logs, read_log, read_metadata, find_latest);
 
 // Storing the timestamp of the last processed job.
 if (all_logs.length) {

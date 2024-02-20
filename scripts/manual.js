@@ -33,7 +33,7 @@ const args = parseArgs({
     }
 });
 
-const { db_paths, db_tokenizable } = utils.parseConfigurations(utils.required(args, "config"), utils.required(args, "dir"));
+const db_paths = utils.parseConfigurations(utils.required(args, "config"), utils.required(args, "dir"));
 const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 await manualHandler(
@@ -46,5 +46,4 @@ await manualHandler(
     find_latest, 
     read_summary, 
     read_metadata, 
-    db_tokenizable
 );

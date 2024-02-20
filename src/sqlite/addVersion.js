@@ -1,6 +1,6 @@
 import { splitIntoTokens } from "./splitIntoTokens.js";
 
-export function addVersion(db, project, asset, version, latest, metadata, tokenizable) {
+export function addVersion(db, project, asset, version, latest, metadata) {
     const trans = db.transaction(() => {
         db.prepare("DELETE FROM versions WHERE project = ? AND asset = ? AND VERSION = ?").run(project, asset, version);
         if (latest) {
@@ -22,7 +22,7 @@ export function addVersion(db, project, asset, version, latest, metadata, tokeni
         for (const [p, m] of Object.entries(metadata)) {
             let pinfo = db.prepare("INSERT INTO paths(vid, path, metadata) VALUES(?, ?, jsonb(?)) RETURNING pid").get(vid, p, JSON.stringify(m));
             let pid = pinfo.pid;
-            traverse_metadata(db, pid, m, null, insert_token, tokenizable);
+            traverse_metadata(db, pid, m, null, insert_token);
         }
     });
 
@@ -30,24 +30,22 @@ export function addVersion(db, project, asset, version, latest, metadata, tokeni
     return;
 }
 
-function traverse_metadata(db, pid, metadata, property, insert_token, tokenizable) {
+function traverse_metadata(db, pid, metadata, property, insert_token) {
     if (metadata instanceof Array) {
         for (const v of metadata) {
-            traverse_metadata(db, pid, v, property, insert_token, tokenizable);
+            traverse_metadata(db, pid, v, property, insert_token);
         }
     } else if (metadata instanceof Object) {
         for (const [k, v] of Object.entries(metadata)) {
             let newname = (property == null ? k : property + "." + k);
-            traverse_metadata(db, pid, v, newname, insert_token, tokenizable);
+            traverse_metadata(db, pid, v, newname, insert_token);
         }
     } else {
-        if (typeof metadata == "string" && tokenizable.has(property)) {
+        if (typeof metadata == "string") {
             let tokens = splitIntoTokens(metadata);
             for (const t of tokens) {
                 insert_token(pid, property, t);
             }
-        } else {
-            insert_token(pid, property, String(metadata));
         }
     }
 }

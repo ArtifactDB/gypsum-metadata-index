@@ -6,10 +6,8 @@ import Database from "better-sqlite3";
 test("freshHandler works correctly without probation", async () => {
     const testdir = utils.setupTestDirectory("freshHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         all_paths[p] = path.join(testdir, "test" + p + ".sqlite3")
-        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     await freshHandler(
@@ -54,8 +52,7 @@ test("freshHandler works correctly without probation", async () => {
                     "_alt": { "thingy.csv": utils.mockMetadata["macrophage"] }
                 }
             }
-        },
-        all_tokenizable
+        }
     );
 
     // Check that all versions are added, along with their metadata entries.
@@ -69,7 +66,7 @@ test("freshHandler works correctly without probation", async () => {
         expect(vpayload.map(x => x.version)).toEqual(["bar1", "bar2", "v1", "v1"]);
         expect(vpayload.map(x => x.latest)).toEqual([0, 1, 1, 1]);
 
-        let tpayload = utils.scanForToken(db, 'Donato');
+        let tpayload = utils.scanForToken(db, 'donato');
         if (x == "_meta") {
             expect(tpayload.length).toBeGreaterThan(0);
         } else {
@@ -90,10 +87,8 @@ test("freshHandler works correctly without probation", async () => {
 test("freshHandler works correctly with probation", async () => {
     const testdir = utils.setupTestDirectory("freshHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         all_paths[p] = path.join(testdir, "test" + p + ".sqlite3")
-        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     await freshHandler(
@@ -132,8 +127,7 @@ test("freshHandler works correctly with probation", async () => {
                 "_meta": { "AAA.json": utils.mockMetadata["marcille"] },
                 "_alt": { "BBB/CCC.txt": utils.mockMetadata["chicken"] }
             }
-        },
-        all_tokenizable
+        }
     );
 
     // Check that all versions are added, along with their metadata entries.
@@ -147,7 +141,7 @@ test("freshHandler works correctly with probation", async () => {
         expect(vpayload[0].version).toBe("bar1");
         expect(vpayload[0].latest).toBe(1);
 
-        let tpayload = utils.scanForToken(db, 'Donato');
+        let tpayload = utils.scanForToken(db, 'donato');
         if (x == "_meta") {
             expect(tpayload.length).toBeGreaterThan(0);
         } else {

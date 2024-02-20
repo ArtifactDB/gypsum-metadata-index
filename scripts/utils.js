@@ -5,13 +5,11 @@ import * as path from "path";
 
 export function parseConfigurations(configs, dir) {
     const db_paths = {};
-    const db_tokenizable = {};
     for (const cpath of configs) {
-        let config = JSON.parse(fs.readFileSync(cpath, { encoding: "utf8" }));
-        db_paths[config.file_name] = path.join(dir, config.db_name);
-        db_tokenizable[config.file_name] = new Set(config.tokenizable);
+        let i = cpath.indexOf(",");
+        db_paths[cpath.slice(0, i)] = path.join(dir, cpath.slice(i + 1));
     }
-    return { db_paths, db_tokenizable };
+    return db_paths;
 }
 
 export function chooseSourceFunctions(registry, gypsum_url) {

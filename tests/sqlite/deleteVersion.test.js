@@ -11,19 +11,19 @@ test("Versions can be deleted", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] }, new Set);
-    addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata["chicken"] }, new Set);
+    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata["chicken"] });
 
     let tpayload1 = utils.scanForToken(db, 'chicken');
-    expect(tpayload1.length).toBe(1);
-    let tpayload2 = utils.scanForToken(db, 'Marcille');
-    expect(tpayload2.length).toBe(1);
+    expect(tpayload1.length).toBeGreaterThan(0);
+    let tpayload2 = utils.scanForToken(db, 'marcille');
+    expect(tpayload2.length).toBeGreaterThan(0);
 
     // Deletion cascades to all other tables.
     deleteVersion(db, "foo", "bar", "whee");
 
     tpayload1 = utils.scanForToken(db, 'chicken');
-    expect(tpayload1.length).toBe(1);
-    tpayload2 = utils.scanForToken(db, 'Marcille');
+    expect(tpayload1.length).toBeGreaterThan(0);
+    tpayload2 = utils.scanForToken(db, 'marcille');
     expect(tpayload2.length).toBe(0);
 })
