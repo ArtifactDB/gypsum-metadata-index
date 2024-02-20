@@ -13,6 +13,9 @@ const args = parseArgs({
         registry: {
             type: "string",
         },
+        gypsum: {
+            type: "string",
+        },
         dir: {
             type: "string",
         }
@@ -21,7 +24,7 @@ const args = parseArgs({
 
 const dir = utils.required(args, "dir");
 const { db_paths, db_tokenizable } = utils.parseConfigurations(utils.required(args, "config"), dir);
-const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"));
+const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 // Creating the timestamp here, just so that if there are any operations
 // between now and completion of the index, we catch them in the updates. This

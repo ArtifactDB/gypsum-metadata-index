@@ -1,4 +1,5 @@
 import * as local from "../src/local/index.js";
+import * as gypsum from "../src/gypsum/index.js";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -13,8 +14,8 @@ export function parseConfigurations(configs, dir) {
     return { db_paths, db_tokenizable };
 }
 
-export function chooseSourceFunctions(registry) {
-    if (registry) {
+export function chooseSourceFunctions(registry, gypsum_url) {
+    if (registry !== null) {
         return {
             list_projects: () => local.listProjects(registry),
             list_assets: (project) => local.listAssets(registry, project),
@@ -25,8 +26,19 @@ export function chooseSourceFunctions(registry) {
             read_metadata: (project, asset, version, to_extract) => local.readMetadata(registry, project, asset, version, to_extract),
             find_latest: (project, asset) => local.fetchLatest(registry, project, asset),
         };
+    } else if (gypsum_url !== null)  {
+        return {
+            list_projects: () => gypsum.listProjects(gypsum_url),
+            list_assets: (project) => gypsum.listAssets(gypsum_url, project),
+            list_versions: (project, asset) => gypsum.listVersions(gypsum_url, project, asset),
+            list_logs: since => gypsum.listLogs(gypsum_url, since),
+            read_log: name => gypsum.readLog(gypsum_url, name),
+            read_summary: (project, asset, version) => gypsum.readSummary(gypsum_url, project, asset, version),
+            read_metadata: (project, asset, version, to_extract) => gypsum.readMetadata(gypsum_url, project, asset, version, to_extract),
+            find_latest: (project, asset) => gypsum.fetchLatest(gypsum_url, project, asset),
+        };
     } else {
-        throw new Error("non-registry arguments are not yet supported");
+        throw new Error("one of 'registry' or 'gypsum' must be provided");
     }
 }
 

@@ -13,6 +13,9 @@ const args = parseArgs({
         registry: {
             type: "string",
         },
+        gypsum: {
+            type: "string",
+        },
         dir: {
             type: "string",
         },
@@ -29,7 +32,7 @@ const args = parseArgs({
 });
 
 const { db_paths, db_tokenizable } = utils.parseConfigurations(utils.required(args, "config"), utils.required(args, "dir"));
-const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.required(args, "registry"));
+const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 await manualHandler(
     db_paths, 
