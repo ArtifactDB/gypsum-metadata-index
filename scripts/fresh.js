@@ -25,7 +25,7 @@ const args = parseArgs({
 });
 
 const dir = utils.required(args, "dir");
-const { db_paths, db_tokenizable } = utils.parseConfigurations(utils.required(args, "config"), dir);
+const db_paths = utils.parseConfigurations(utils.required(args, "config"), dir);
 const { list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata } = utils.chooseSourceFunctions(utils.optional(args, "registry"), utils.optional(args, "gypsum"));
 
 // Creating the timestamp here, just so that if there are any operations
@@ -34,4 +34,4 @@ const { list_projects, list_assets, list_versions, find_latest, read_summary, re
 // just (re)aligning with whatever's in the bucket.
 fs.writeFileSync(path.join(dir, "modified"), String((new Date).getTime()))
 
-await freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata, db_tokenizable);
+await freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata);

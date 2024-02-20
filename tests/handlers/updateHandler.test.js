@@ -53,14 +53,12 @@ test("readLogs reports logs correctly", async () => {
 test("updateHandler adds versions correctly", async () => {
     const testdir = utils.setupTestDirectory("updateHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
         createTables(db);
         db.close();
         all_paths[p] = opath;
-        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     const now = new Date;
@@ -96,8 +94,7 @@ test("updateHandler adds versions correctly", async () => {
         },
         (project, asset) => {
             throw new Error("I shouldn't be called here");
-        },
-        all_tokenizable
+        }
     );
 
     // Check that it sorts correctly.
@@ -143,7 +140,7 @@ test("updateHandler adds versions correctly", async () => {
         expect(tpayload[0].path).toBe("BBB/CCC.txt");
         expect(tpayload[0].field).toBe("variations");
 
-        tpayload = utils.scanForToken(db, '%stem cells%', { partial: true });
+        tpayload = utils.scanForToken(db, 'hemato%', { partial: true });
         expect(tpayload.length).toBe(1);
         expect(tpayload[0].path).toBe("thingy.csv");
         expect(tpayload[0].field).toBe("lineage.from.from.name");
@@ -156,7 +153,6 @@ test("updateHandler adds versions correctly", async () => {
 test("updateHandler deletes versions correctly", async () => {
     const testdir = utils.setupTestDirectory("updateHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
@@ -166,7 +162,6 @@ test("updateHandler deletes versions correctly", async () => {
         addVersion(db, "test", "foo", "v3", true, {}, new Set);
         db.close();
         all_paths[p] = opath;
-        all_tokenizable[p] = new Set;
     }
 
     const now = new Date;
@@ -185,8 +180,7 @@ test("updateHandler deletes versions correctly", async () => {
         },
         (project, asset) => {
             throw new Error("I shouldn't be called here");
-        },
-        all_tokenizable
+        }
     );
 
     for (const [x, p] of Object.entries(all_paths)) {
@@ -215,8 +209,7 @@ test("updateHandler deletes versions correctly", async () => {
         },
         (project, asset) => {
             return "v1";
-        },
-        all_tokenizable
+        }
     );
 
     for (const [x, p] of Object.entries(all_paths)) {
@@ -242,8 +235,7 @@ test("updateHandler deletes versions correctly", async () => {
         },
         (project, asset) => {
             return null;
-        },
-        all_tokenizable
+        }
     );
 
     for (const [x, p] of Object.entries(all_paths)) {
@@ -257,7 +249,6 @@ test("updateHandler deletes versions correctly", async () => {
 test("updateHandler deletes assets correctly", async () => {
     const testdir = utils.setupTestDirectory("updateHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
@@ -266,7 +257,6 @@ test("updateHandler deletes assets correctly", async () => {
         addVersion(db, "test", "bar", "v1", true, {}, new Set);
         db.close();
         all_paths[p] = opath;
-        all_tokenizable[p] = new Set;
     }
 
     const now = new Date;
@@ -284,8 +274,7 @@ test("updateHandler deletes assets correctly", async () => {
         },
         (project, asset) => {
             throw new Error("I shouldn't be called here");
-        },
-        all_tokenizable
+        }
     );
 
     for (const [x, p] of Object.entries(all_paths)) {
@@ -301,7 +290,6 @@ test("updateHandler deletes assets correctly", async () => {
 test("updateHandler deletes projects correctly", async () => {
     const testdir = utils.setupTestDirectory("updateHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
@@ -310,7 +298,6 @@ test("updateHandler deletes projects correctly", async () => {
         addVersion(db, "retest", "foo", "v1", true, {}, new Set);
         db.close();
         all_paths[p] = opath;
-        all_tokenizable[p] = new Set;
     }
 
     const now = new Date;
@@ -328,8 +315,7 @@ test("updateHandler deletes projects correctly", async () => {
         },
         (project, asset) => {
             throw new Error("I shouldn't be called here");
-        },
-        all_tokenizable
+        }
     );
 
     for (const [x, p] of Object.entries(all_paths)) {

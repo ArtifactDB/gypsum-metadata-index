@@ -11,20 +11,20 @@ test("Projects can be deleted", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] }, new Set);
-    addVersion(db, "foo", "bar2", "whee", true, { "b.txt": utils.mockMetadata["marcille"] }, new Set);
-    addVersion(db, "foo2", "stuff", "whee", true, { "a.txt": utils.mockMetadata["chicken"] }, new Set);
+    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "bar2", "whee", true, { "b.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo2", "stuff", "whee", true, { "a.txt": utils.mockMetadata["chicken"] });
 
     let tpayload1 = utils.scanForToken(db, 'chicken');
-    expect(tpayload1.length).toBe(1);
-    let tpayload2 = utils.scanForToken(db, 'Donato');
-    expect(tpayload2.length).toBe(2);
+    expect(tpayload1.length).toBeGreaterThan(0);
+    let tpayload2 = utils.scanForToken(db, 'donato');
+    expect(tpayload2.length).toBeGreaterThan(0);
 
     // Deletion cascades to all other tables.
     deleteProject(db, "foo");
 
     tpayload1 = utils.scanForToken(db, 'chicken');
-    expect(tpayload1.length).toBe(1);
-    tpayload2 = utils.scanForToken(db, 'Donato');
+    expect(tpayload1.length).toBeGreaterThan(0);
+    tpayload2 = utils.scanForToken(db, 'donato');
     expect(tpayload2.length).toBe(0);
 })

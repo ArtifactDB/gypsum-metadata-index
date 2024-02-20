@@ -7,14 +7,12 @@ import Database from "better-sqlite3";
 test("manualHandler works correctly", async () => {
     const testdir = utils.setupTestDirectory("manualHandler");
     let all_paths = {};
-    let all_tokenizable = {};
     for (const p of [ "_meta", "_alt" ]) {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
         createTables(db);
         db.close();
         all_paths[p] = opath;
-        all_tokenizable[p] = new Set(["description", "motto"]);
     }
 
     // Set up the various functions.
@@ -60,7 +58,7 @@ test("manualHandler works correctly", async () => {
     };
 
     // Refreshing a single version.
-    await manualHandler(all_paths, "test", "foo", "bar1", listAssets, listVersions, findLatest, readSummary, readMetadata, all_tokenizable);
+    await manualHandler(all_paths, "test", "foo", "bar1", listAssets, listVersions, findLatest, readSummary, readMetadata);
 
     for (const [x, p] of Object.entries(all_paths)) {
         const db = Database(p);
@@ -72,7 +70,7 @@ test("manualHandler works correctly", async () => {
         expect(vpayload[0].version).toEqual("bar1");
         expect(vpayload[0].latest).toEqual(0);
 
-        let tpayload = utils.scanForToken(db, 'Donato');
+        let tpayload = utils.scanForToken(db, 'donato');
         if (x == "_meta") {
             expect(tpayload.length).toBeGreaterThan(0);
         } else {
@@ -90,7 +88,7 @@ test("manualHandler works correctly", async () => {
     }
 
     // Refreshing a single asset.
-    await manualHandler(all_paths, "test", "foo", null, listAssets, listVersions, findLatest, readSummary, readMetadata, all_tokenizable);
+    await manualHandler(all_paths, "test", "foo", null, listAssets, listVersions, findLatest, readSummary, readMetadata);
 
     for (const [x, p] of Object.entries(all_paths)) {
         const db = Database(p);
@@ -110,7 +108,7 @@ test("manualHandler works correctly", async () => {
     }
 
     // Refreshing a single project.
-    await manualHandler(all_paths, "test", null, null, listAssets, listVersions, findLatest, readSummary, readMetadata, all_tokenizable);
+    await manualHandler(all_paths, "test", null, null, listAssets, listVersions, findLatest, readSummary, readMetadata);
 
     for (const [x, p] of Object.entries(all_paths)) {
         const db = Database(p);

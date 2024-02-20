@@ -85,7 +85,7 @@ export async function readLogs(last_modified, list_logs, read_log) {
     return logs;
 }
 
-export async function updateHandler(db_paths, last_modified, list_logs, read_log, read_metadata, find_latest, db_tokenizable) {
+export async function updateHandler(db_paths, last_modified, list_logs, read_log, read_metadata, find_latest) {
     const db_handles = {};
     for (const [k, v] of Object.entries(db_paths)) {
         db_handles[k] = Database(v);
@@ -104,7 +104,7 @@ export async function updateHandler(db_paths, last_modified, list_logs, read_log
                 const version = safe_extract(parameters, "version");
                 let output = await read_metadata(project, asset, version, to_extract);
                 for (const [e, db] of Object.entries(db_handles)) {
-                    addVersion(db, project, asset, version, is_latest(parameters), output[e], db_tokenizable[e]);
+                    addVersion(db, project, asset, version, is_latest(parameters), output[e]);
                 }
 
             } else if (type == "delete-version") {
