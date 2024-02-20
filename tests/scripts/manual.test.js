@@ -10,9 +10,9 @@ test("manual script works correctly", () => {
 
     // Creating an empty registry so that we can initialize the DBs with nothing in them.
     const tmp = utils.setupTestDirectory("manual-empty");
-    execSync(`node ./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${tmp}`);
+    execSync(`./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${tmp}`);
     {
-        execSync(`node ./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo --asset bar --version v1`);
+        execSync(`./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo --asset bar --version v1`);
         const db1 = path.join(args.indices, "other.sqlite3");
         let con1 = new Database(db1);
         let output = con1.prepare("SELECT * FROM versions").all();
@@ -20,16 +20,16 @@ test("manual script works correctly", () => {
         expect(output[0].version).toBe("v1");
         con1.close();
 
-        execSync(`node ./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo --asset bar`);
+        execSync(`./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo --asset bar`);
         con1 = new Database(db1);
         output = con1.prepare("SELECT * FROM versions").all();
         expect(output.length).toBe(2);
         con1.close();
     }
 
-    execSync(`node ./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${tmp}`);
+    execSync(`./scripts/fresh.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${tmp}`);
     {
-        execSync(`node ./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo`);
+        execSync(`./scripts/manual.js --config ${args.configs[0]} --config ${args.configs[1]} --dir ${args.indices} --registry ${args.registry} --project foo`);
         const db1 = path.join(args.indices, "other.sqlite3");
         const con1 = new Database(db1);
         let output = con1.prepare("SELECT * FROM versions").all();

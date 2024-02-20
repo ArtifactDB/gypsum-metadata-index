@@ -50,7 +50,7 @@ test("configure script works correctly", () => {
     }
 }`);
 
-    let output = execSync(`node ./scripts/configure.js --schema ${schema_path} --file_name falin --db_name marcille`);
+    let output = execSync(`./scripts/configure.js --schema ${schema_path} --file_name falin --db_name marcille`);
     const dec = new TextDecoder;
     let parsed = JSON.parse(dec.decode(output));
     expect(parsed.file_name).toBe("falin");
@@ -62,7 +62,7 @@ test("configure script works correctly", () => {
     expect(parsed.tokenizable).toEqual(expected);
 
     // Schema is actually optional.
-    output = execSync(`node ./scripts/configure.js --file_name falin --db_name marcille`);
+    output = execSync(`./scripts/configure.js --file_name falin --db_name marcille`);
     parsed = JSON.parse(dec.decode(output));
     expect(parsed.tokenizable).toEqual([]);
 })
