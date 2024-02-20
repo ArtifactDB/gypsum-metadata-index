@@ -23,7 +23,7 @@ test("splitIntoTokens works correctly", () => {
     expect(split.has("muller")).toBe(true);
 
     // Otherwise it just holds onto stuff.
-    var split = new Set(splitIntoTokens("hi everybody 😀 Aaron's here"));
+    var split = new Set(splitIntoTokens("hi every人 Aaron's here"));
     expect(split.has("aaron")).toBe(true);
-    expect(split.has("😀")).toBe(true);
+    expect(split.has("every人")).toBe(true);
 })

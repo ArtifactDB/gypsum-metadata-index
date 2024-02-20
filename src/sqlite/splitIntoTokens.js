@@ -5,12 +5,10 @@ export function splitIntoTokens(string) {
     // Case folding.
     string = string.toLowerCase();
 
-    // Splitting on ASCII non-alphanumerics (excluding dash, which is often
-    // useful in scientific text).  This uses a non-consuming regular
-    // expression (?=...) to mimic AND, whereby we split on anything that's
-    // ASCII and not a lower-case alphanumeric/dash.
-    let tokens = string.split(/(?=[^a-z0-9-])[\x00-\x7F]/)
+    // Using the same rules, as much as possible, as fts5's unicode tokenizer (see 4.3.1 of https://www.sqlite.org/fts5.html).
+    // The only exception is that we don't split on dashes because these are informative for scientific applications.
+    let tokens = string.split(/[^\p{N}\p{L}\p{Co}-]/u)
 
-    let standardized = tokens.filter(x => x.length > 0);
-    return Array.from(new Set(standardized));
+    let filtered = tokens.filter(x => x.length > 0);
+    return Array.from(new Set(filtered));
 }
