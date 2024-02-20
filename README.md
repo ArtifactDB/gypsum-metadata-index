@@ -1,6 +1,6 @@
 # Index gypsum metadata
 
-[![Tests](https://github.com/ArtifactDB/stringy-sqlite-search/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/ArtifactDB/stringy-sqlite-search/actions/workflows/run-tests.yaml)
+[![Tests](https://github.com/ArtifactDB/gypsum-metadata-index/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/ArtifactDB/gypsum-metadata-index/actions/workflows/run-tests.yaml)
 
 ## Introduction
 
@@ -22,7 +22,7 @@ All metadata documents should be JSON-formatted and assigned to a particular pro
 The scripts in this repository will scrape the contents of the backend to identify metadata documents to add to the index.
 
 One SQLite index is generated for each "class" of metadata documents.
-All documents in the same class should have the same base name, i.e., after removing the `/` prefix in the full bucket path. 
+All metadata documents of the same class should have the same base name, i.e., after removing any directories or `/`-delimited prefix.
 Typically, each metadata class corresponds to a specific [JSON schema](https://json-schema.org) used to validate its documents;
 this suggests that the documents are comparable with similar structure and values, though this is not strictly required for indexing.
 
@@ -57,12 +57,12 @@ For arrays, each item is treated as a separate token with the same field name as
 
 Each string is split into tokens by first normalizing the string to remove diacritics,
 converting all characters into lowercase,
-and then splitting the string at any ASCII character that is not alphanumeric or a dash.
-(We keep dashes as these are generally useful for scientific terms like gene names.)
+and then splitting the string at any character that is not a Unicode letter, number or dash.
+We consider dashes as part of the token to preserve scientific terms like gene names.
 
 ## SQLite file structure
 
-### `versions` table
+### `versions` 
 
 This is a table where each row corresponds to a successfully indexed project-asset-combination.
 The table contains the following fields: 
@@ -81,8 +81,9 @@ This is a table where each row corresponds to a metadata file within a project-a
 It contains the following columns: 
 
 - `pid`: integer, the path ID and the primary key for this table.
-- `vid`: integer, the version ID from `versions`, representing the project-asset-version containing the metadata file.
-- `path`: text, the relative path to the directory containing the metadata file inside the project-asset-version.
+- `vid`: integer, a version ID from `versions`, specifying the project-asset-version containing this metadata file.
+- `path`: text, the relative path to the directory containing the metadata file inside the project-asset-version's directory.
+  This is set to `.` if the metadata file is located in the root of the project-asset-version's directory.
 - `metadata`: blob, the contents of the metadata file as JSONB.
 
 An index is available for `path`.
@@ -103,13 +104,13 @@ This is a table where each row corresponds to a unique field name.
 It contains the following columns:
 
 - `fid`: integer, the field name ID and the primary key for this table.
-- `field`: text, the field names.
+- `field`: text, the field name.
 
 An index is available for `field`.
 
 ### `links`
 
-This is a table where each row corresponds to a relationship between a metadata file, the field name and token.
+This is a table where each row defines to a relationship between a metadata file, the field name and token.
 It contains the following columns:
 
 - `pid`: integer, the path ID from `paths`.
@@ -131,13 +132,15 @@ Each script can either be run directly or via `npx`:
 
 ```shell
 # Older versions of Node.js may need a preceding NODE_OPTIONS='--experimental-fetch'.
-./scripts/fresh.js --config BASENAME,DBNAME --gypsum URL --dir DIR
-npx --package=stringy-sqlite-search fresh --config BASENAME,DBNAME --gypsum URL --dir DIR
+./scripts/fresh.js --class BASENAME,DBNAME --gypsum URL --dir DIR
+
+# Alternatively, to run from packages depending on this one:
+npx --package=gypsum-metadata-index fresh --class BASENAME,DBNAME --gypsum URL --dir DIR
 ```
 
 All scripts have the following arguments in common:
 
-- `--config BASENAME,DBANEM`: a string describing a metadata document class.
+- `--class BASENAME,DBNAME`: a string describing a metadata document class.
   This should contain the base name of each metadata document and the name of the SQLite file in which to save the metadata, separated by a comma.
   This argument may be specified multiple times for different classes.
 - `--registry DIR`: a string containing a path to a directory containing a **gypsum**-like organization of files.
@@ -154,11 +157,11 @@ extracting metadata documents for each class,
 and inserting the metadata into the class-specific SQLite file.
 
 ```shell
-./scripts/fresh.js --config BASENAME,DBNAME --gypsum URL --dir DIR
+./scripts/fresh.js --class BASENAME,DBNAME --gypsum URL --dir DIR
 ```
 
 If the location specified in `--dir` does not exist, it will be created.
-Any existing SQLite files in `--dir` will be overwritten by the new files as specified in `--config`.
+Any existing SQLite files in `--dir` will be overwritten by the new files as specified in `--class`.
 
 In addition to creating new SQLite files, `fresh.js` will also add a `modified` file containing a Unix timestamp.
 This will be used by `update.js` (see below) to determine which logs to consider during updates.
@@ -171,10 +174,10 @@ Each log may be used to perform an update to the SQLite file based on its action
 either by inserting rows corresponding to new objects or (more rarely) by deleting rows corresponding to deleted assets, versions or projects.
 
 ```shell
-./scripts/update.js --config BASENAME,DBNAME --gypsum URL --dir DIR
+./scripts/update.js --class BASENAME,DBNAME --gypsum URL --dir DIR
 ```
 
-It is assumed that the location specified in `--dir` already contains the SQLite files named by `--config`,
+It is assumed that the location specified in `--dir` already contains the SQLite files named by `--class`,
 as `update.js` should be run on indices after their creation by `fresh.js`.
 
 In addition to modifying the SQLite files, `update.js` will update the `modified` file to the timestamp of the last log.
@@ -185,13 +188,13 @@ The [`manual.js`](scripts/manual.js) script will reset the records for a specifi
 This is intended for manual patches to specific entries, e.g., if `update.js` overlooks some changes in the backend.
 
 ```shell
-./scripts/manual.js --config BASENAME,DBNAME --gypsum URL --dir DIR \
+./scripts/manual.js --class BASENAME,DBNAME --gypsum URL --dir DIR \
     --project PROJECT 
 
-./scripts/manual.js --config BASENAME,DBNAME --gypsum URL --dir DIR \
+./scripts/manual.js --class BASENAME,DBNAME --gypsum URL --dir DIR \
     --project PROJECT --asset ASSET
 
-./scripts/manual.js --config BASENAME,DBNAME --gypsum URL --dir DIR \
+./scripts/manual.js --class BASENAME,DBNAME --gypsum URL --dir DIR \
     --project PROJECT --asset ASSET -- version VERSION
 ```
 
