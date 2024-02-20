@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { updateHandler } from "../src/handlers/updateHandler.js";
 import { parseArgs } from "node:util";
 import * as fs from "fs";

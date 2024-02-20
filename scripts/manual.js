@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { manualHandler } from "../src/handlers/manualHandler.js";
 import { parseArgs } from "node:util";
 import * as fs from "fs";

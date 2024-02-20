@@ -15,5 +15,11 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.470.0",
     "better-sqlite3": "^9.2.2"
+  },
+  "bin": {
+    "configure": "./scripts/configure.js",
+    "fresh": "./scripts/fresh.js",
+    "update": "./scripts/update.js",
+    "manual": "./scripts/manual.js"
   }
 }
