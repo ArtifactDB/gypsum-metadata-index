@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 
-export function readLog(registry, name) {
-    const contents = fs.readFileSync(path.join(registry, "..logs", name), { encoding: 'utf8', flag: 'r' });
+export async function readLog(registry, name) {
+    const full = path.join(registry, "..logs", name);
+    const contents = await fs.promises.readFile(full, { encoding: 'utf8' });
     return JSON.parse(contents);
 }

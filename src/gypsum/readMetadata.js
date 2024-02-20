@@ -6,6 +6,11 @@ export async function readMetadata(url, project, asset, version, to_extract, { p
         output[s] = {};
     }
 
+    let collected_base = [];
+    let collected_dir = [];
+    let collected_meta = [];
+
+    // Only added for testing; this option should not be used in practice.
     const fun = (parse ? fetchJson : (url, key) => fetchFile(url, key).then(x => x.Body.transformToString("utf-8")));
 
     let manifest = await fetchJson(url, project + "/" + asset + "/" + version + "/..manifest");
@@ -26,8 +31,15 @@ export async function readMetadata(url, project, asset, version, to_extract, { p
                 key = project + "/" + asset + "/" + version + "/" + k;
             }
 
-            output[base][dir] = await fun(url, key);
+            collected_base.push(base);
+            collected_dir.push(dir);
+            collected_meta.push(fun(url, key));
         }
+    }
+
+    collected_meta = await Promise.all(collected_meta);
+    for (var i = 0; i < collected_meta.length; ++i) {
+        output[collected_base[i]][collected_dir[i]] = collected_meta[i];
     }
 
     return output;

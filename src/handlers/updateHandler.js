@@ -34,7 +34,9 @@ export async function readLogs(last_modified, list_logs, read_log) {
     let threshold_string = (new Date(last_modified.getTime() - 1000 * 60 * 60 * 24)).toISOString()
     const log_list = await list_logs(threshold_string);
 
-    const logs = [];
+    const log_names = [];
+    const log_times = [];
+    let log_contents = [];
     for (const l of log_list) {
         let i_ = l.indexOf("_")
         if (i_ < 0) {
@@ -49,12 +51,20 @@ export async function readLogs(last_modified, list_logs, read_log) {
             continue;
         }
 
-        try { 
-            const contents = await read_log(l);
-            logs.push({ name: l, time: parsed, log: contents });
-        } catch (err) {
+        log_names.push(l);
+        log_times.push(parsed);
+        log_contents.push(read_log(l));
+    }
+
+    log_contents = await Promise.allSettled(log_contents);
+    let logs = [];
+    for (var i = 0; i < log_contents.length; ++i) {
+        const outcome = log_contents[i];
+        if (outcome.status == "rejected") {
             // Report the error but keep going so that we don't stall at a single broken log.
-            console.err(new Error("failed to parse log '" + l + "'", { cause: err }));
+            console.err(new Error("failed to parse log '" + log_names[i] + "'", { cause: outcome.reason }));
+        } else {
+            logs.push({ name: log_names[i], time: log_times[i], log: outcome.value });
         }
     }
 

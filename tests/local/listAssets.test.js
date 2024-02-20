@@ -3,7 +3,7 @@ import * as path from "path";
 import * as utils from "../utils.js";
 import { listAssets } from "../../src/local/listAssets.js";
 
-test("listAssets works correctly", () => {
+test("listAssets works correctly", async () => {
     const testdir = utils.setupTestDirectory("listAssets");
     fs.mkdirSync(path.join(testdir, "foo"));
     fs.mkdirSync(path.join(testdir, "foo", "bar"));
@@ -13,7 +13,7 @@ test("listAssets works correctly", () => {
     fs.writeFileSync(path.join(testdir, "foo", "..permissions"), "asdasd");
     fs.writeFileSync(path.join(testdir, "foo", "..summary"), "asdasd");
 
-    const listing = listAssets(testdir, "foo");
+    const listing = await listAssets(testdir, "foo");
     listing.sort();
     expect(listing).toEqual(["bar", "whee"]);
 })

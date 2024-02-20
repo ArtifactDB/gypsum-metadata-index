@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 
-export function readSummary(registry, project, asset, version) {
+export async function readSummary(registry, project, asset, version) {
     const full = path.join(registry, project, asset, version, "..summary");
-    const contents = fs.readFileSync(full, { encoding: 'utf8', flag: 'r' });
+    const contents = await fs.promises.readFile(full, { encoding: 'utf8' });
     return JSON.parse(contents);
 }

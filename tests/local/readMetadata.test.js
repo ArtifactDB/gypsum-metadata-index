@@ -3,7 +3,7 @@ import * as path from "path";
 import * as utils from "../utils.js";
 import { readMetadata } from "../../src/local/readMetadata.js";
 
-test("readMetadata works correctly", () => {
+test("readMetadata works correctly", async () => {
     const testdir = utils.setupTestDirectory("readMetadata");
     fs.mkdirSync(path.join(testdir, "foo"));
     fs.mkdirSync(path.join(testdir, "foo", "bar"));
@@ -22,7 +22,7 @@ test("readMetadata works correctly", () => {
     fs.writeFileSync(path.join(testdir, "foo", "bar", "whee", "random", "_alternative.json"), '{ "title": "shiratsuyu" }');
 
     {
-        let solo = readMetadata(testdir, "foo", "bar", "whee", [ "_metadata.json" ])
+        let solo = await readMetadata(testdir, "foo", "bar", "whee", [ "_metadata.json" ])
         expect(Object.keys(solo)).toEqual([ "_metadata.json" ]);
 
         let meta = solo["_metadata.json"]; 
@@ -32,7 +32,7 @@ test("readMetadata works correctly", () => {
     }
 
     {
-        let multi = readMetadata(testdir, "foo", "bar", "whee", [ "_metadata.json", "_alternative.json" ])
+        let multi = await readMetadata(testdir, "foo", "bar", "whee", [ "_metadata.json", "_alternative.json" ])
         expect(Object.keys(multi)).toEqual([ "_metadata.json", "_alternative.json" ]);
 
         let meta = multi["_metadata.json"]; 
