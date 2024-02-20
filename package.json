@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "stringy-sqlite-search",
+  "name": "gypsum-metadata-index",
   "version": "1.0.0",
   "type": "module",
-  "description": "Index string-based metadata from a gypsum-compatible file store into a SQLite database.",
+  "description": "Index metadata from a gypsum-compatible file store into a SQLite database.",
   "author": "LTLA <infinite.monkeys.with.keyboards@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -17,7 +17,6 @@
     "better-sqlite3": "^9.2.2"
   },
   "bin": {
-    "configure": "./scripts/configure.js",
     "fresh": "./scripts/fresh.js",
     "update": "./scripts/update.js",
     "manual": "./scripts/manual.js"
