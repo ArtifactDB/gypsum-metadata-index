@@ -3,7 +3,7 @@ import { addVersion } from "../sqlite/addVersion.js";
 import { createTables } from "../sqlite/createTables.js"; 
 import Database from "better-sqlite3"
 
-export async function freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata) {
+export async function freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata, { verbose = false } = {}) {
     const db_handles = {};
     for (const [k, v] of Object.entries(db_paths)) {
         if (fs.existsSync(v)) {
@@ -27,6 +27,8 @@ export async function freshHandler(db_paths, list_projects, list_assets, list_ve
         if (outcome.status == "rejected") {
             // Just report the error and keep going so that we don't stall at a single broken project. 
             console.error(new Error("failed to add project '" + all_projects[i] + "'", { cause: outcome.reason }));
+        } else if (verbose) {
+            console.log("added project '" + all_projects[i] + "'");
         }
     }
 }

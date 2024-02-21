@@ -34,4 +34,4 @@ const { list_projects, list_assets, list_versions, find_latest, read_summary, re
 // just (re)aligning with whatever's in the bucket.
 fs.writeFileSync(path.join(dir, "modified"), String((new Date).getTime()))
 
-await freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata);
+await freshHandler(db_paths, list_projects, list_assets, list_versions, find_latest, read_summary, read_metadata, { verbose: true });

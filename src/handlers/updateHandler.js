@@ -85,7 +85,7 @@ export async function readLogs(last_modified, list_logs, read_log) {
     return logs;
 }
 
-export async function updateHandler(db_paths, last_modified, list_logs, read_log, read_metadata, find_latest) {
+export async function updateHandler(db_paths, last_modified, list_logs, read_log, read_metadata, find_latest, { verbose = false } = {}) {
     const db_handles = {};
     for (const [k, v] of Object.entries(db_paths)) {
         db_handles[k] = Database(v);
@@ -141,6 +141,10 @@ export async function updateHandler(db_paths, last_modified, list_logs, read_log
 
             } else {
                 throw new Error("unknown update action type '" + type + "'");
+            }
+
+            if (verbose) {
+                console.log("processed log '", l.name, "'");
             }
         } catch (err) {
             // Report the error but keep going so that we don't stall at a single broken log.
