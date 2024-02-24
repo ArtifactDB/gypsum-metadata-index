@@ -55,9 +55,8 @@ For arrays, each item is treated as a separate token with the same field name as
 }
 ```
 
-Each string is split into tokens by first normalizing the string to remove diacritics,
-converting all characters into lowercase,
-and then splitting the string at any character that is not a Unicode letter, number or dash.
+Our tokenization scheme is adapted from the [FTS5 Unicode61 tokenizer](https://www.sqlite.org/fts5.html#unicode61_tokenizer).
+Each string is normalized to remove diacritics, converted into lowercase, and then split at any character that is not a Unicode letter/number or a dash.
 We consider dashes as part of the token to preserve scientific terms like gene names.
 
 ## SQLite file structure
