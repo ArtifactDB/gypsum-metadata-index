@@ -17,9 +17,8 @@ export async function readMetadata(url, project, asset, version, to_extract, { p
     for (const [k, v] of Object.entries(manifest)) {
         let i = k.lastIndexOf("/");
         let base = (i < 0 ? k : k.slice(i + 1));
-        if (base in output) {
-            let dir = (i < 0 ? "." : k.slice(0, i));
 
+        if (base in output) {
             let key;
             if ("link" in v) {
                 let target = v.link;
@@ -32,7 +31,7 @@ export async function readMetadata(url, project, asset, version, to_extract, { p
             }
 
             collected_base.push(base);
-            collected_dir.push(dir);
+            collected_dir.push(k);
             collected_meta.push(fun(url, key));
         }
     }

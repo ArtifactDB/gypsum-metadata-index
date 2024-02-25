@@ -28,14 +28,13 @@ export async function readMetadata(registry, project, asset, version, to_extract
 
 function collect_metadata(full, at, base, extractable, add) {
     let info = fs.statSync(full);
+    const new_at = (at == null ? base : at + "/" + base);
     if (info.isDirectory()) {
         const contents = fs.readdirSync(full);
         for (const p of contents) {
-            let new_at = (at == null ? base : at + "/" + base);
             collect_metadata(path.join(full, p), new_at, p, extractable, add);
         }
     } else if (base in extractable) {
-        const key = (at == null ? "." : at);
-        add(base, key, fs.promises.readFile(full, { encoding: 'utf8' }));
+        add(base, new_at, fs.promises.readFile(full, { encoding: 'utf8' }));
     }
 }

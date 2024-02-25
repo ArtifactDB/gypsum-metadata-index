@@ -27,8 +27,8 @@ test("readMetadata works correctly", async () => {
 
         let meta = solo["_metadata.json"]; 
         expect(Object.keys(meta).length).toEqual(2);
-        expect(meta["."].title).toEqual("shigure");
-        expect(meta["stuff"].title).toEqual("shimakaze");
+        expect(meta["_metadata.json"].title).toEqual("shigure");
+        expect(meta["stuff/_metadata.json"].title).toEqual("shimakaze");
     }
 
     {
@@ -37,13 +37,13 @@ test("readMetadata works correctly", async () => {
 
         let meta = multi["_metadata.json"]; 
         expect(Object.keys(meta).length).toEqual(2);
-        expect(meta["."].title).toEqual("shigure");
-        expect(meta["stuff"].title).toEqual("shimakaze");
+        expect(meta["_metadata.json"].title).toEqual("shigure");
+        expect(meta["stuff/_metadata.json"].title).toEqual("shimakaze");
 
         meta = multi["_alternative.json"]; 
         expect(Object.keys(meta).length).toEqual(3);
-        expect(meta["."].title).toEqual("yuudachi");
-        expect(meta["stuff/blah"].title).toEqual("murasame");
-        expect(meta["random"].title).toEqual("shiratsuyu");
+        expect(meta["_alternative.json"].title).toEqual("yuudachi");
+        expect(meta["stuff/blah/_alternative.json"].title).toEqual("murasame");
+        expect(meta["random/_alternative.json"].title).toEqual("shiratsuyu");
     }
 })

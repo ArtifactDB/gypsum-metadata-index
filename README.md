@@ -81,8 +81,8 @@ It contains the following columns:
 
 - `pid`: integer, the path ID and the primary key for this table.
 - `vid`: integer, a version ID from `versions`, specifying the project-asset-version containing this metadata file.
-- `path`: text, the relative path to the directory containing the metadata file inside the project-asset-version's directory.
-  This is set to `.` if the metadata file is located in the root of the project-asset-version's directory.
+- `path`: text, the relative path to the metadata file inside the project-asset-version's directory.
+  For R2-based stores, this is the suffix to be added to `{project}/{asset}/{version}` to obtain the object key of the file.
 - `metadata`: blob, the contents of the metadata file as JSONB.
 
 An index is available for `path`.
