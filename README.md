@@ -216,4 +216,4 @@ while if `--version` is also specified, the reindexing is further limited to the
 The [**gypsum** documentation](https://github.com/ArtifactDB/gypsum-worker) describes the expected file organization in the **gypsum** bucket.
 The same organization is used in the [Gobbler's documentation](https://github.com/ArtifactDB/gobbler) for an on-premise alternative.
 
-The [**gypsum-bioc-index** repository](https://github.com/ArtifactDB/gypsum-bioc-index) uses this repository to create SQLite indices for Bioconductor packages. 
+The [**bioconductor-metadata-index** repository](https://github.com/ArtifactDB/bioconductor-metadata-index) uses this repository to create SQLite indices for Bioconductor packages. 
