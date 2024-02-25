@@ -144,7 +144,7 @@ export async function updateHandler(db_paths, last_modified, list_logs, read_log
             }
 
             if (verbose) {
-                console.log("processed log '", l.name, "'");
+                console.log("processed log '" + l.name + "'");
             }
         } catch (err) {
             // Report the error but keep going so that we don't stall at a single broken log.
