@@ -11,8 +11,8 @@ test("We can manually set a different latest version", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["chicken"] });
-    addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "bar", "whee", true, utils.mockSummary, { "a.txt": utils.mockMetadata["chicken"] });
+    addVersion(db, "foo", "bar", "whee2", true, utils.mockSummary, { "a.txt": utils.mockMetadata["marcille"] });
 
     let tpayload1 = utils.scanForToken(db, "chicken", { latest: true });
     expect(tpayload1.length).toBe(0);

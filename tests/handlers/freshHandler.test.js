@@ -35,7 +35,7 @@ test("freshHandler works correctly without probation", async () => {
             }
         },
         async (project, asset, version) => {
-            return {};
+            return utils.mockSummary;
         },
         async (project, asset, version, to_extract) => {
             if (project == "test") {
@@ -116,11 +116,11 @@ test("freshHandler works correctly with probation", async () => {
             }
         },
         async (project, asset, version) => {
+            const copy = { ...utils.mockSummary };
             if (project == "test" && version == "bar2") {
-                return { on_probation: true }; // 'bar2' is not probational. 
-            } else {
-                return {};
+                copy.on_probation = true; // 'bar2' is not probational. 
             }
+            return copy;
         },
         async (project, asset, version, to_extract) => {
             return {

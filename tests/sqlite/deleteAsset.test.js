@@ -11,9 +11,9 @@ test("Assets can be deleted", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] });
-    addVersion(db, "foo", "bar", "whee2", true, { "b.txt": utils.mockMetadata["marcille"] });
-    addVersion(db, "foo", "stuff", "whee", true, { "a.txt": utils.mockMetadata["chicken"] });
+    addVersion(db, "foo", "bar", "whee", true, utils.mockSummary, { "a.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "bar", "whee2", true, utils.mockSummary, { "b.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "stuff", "whee", true, utils.mockSummary, { "a.txt": utils.mockMetadata["chicken"] });
 
     let tpayload1 = utils.scanForToken(db, "chicken");
     expect(tpayload1.length).toBeGreaterThan(0);

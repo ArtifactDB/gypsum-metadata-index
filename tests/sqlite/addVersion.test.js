@@ -11,7 +11,7 @@ test("Basic addition of a new version", () => {
     createTables(db);
 
     const meta = { "a.txt": utils.mockMetadata["chicken"], "b/c.txt": utils.mockMetadata["marcille"] };
-    addVersion(db, "foo", "bar", "whee", true, meta);
+    addVersion(db, "foo", "bar", "whee", true, utils.mockSummary, meta);
 
     // Checking that all the pieces were added.
     const vpayload = db.prepare("SELECT * FROM versions").all();
@@ -21,6 +21,8 @@ test("Basic addition of a new version", () => {
     expect(vpayload[0].asset).toBe('bar');
     expect(vpayload[0].version).toBe('whee');
     expect(vpayload[0].latest).toBe(1);
+    expect(vpayload[0].user).toBe("jayaram");
+    expect(vpayload[0].time).toBeGreaterThan(0);
 
     const ppayload = db.prepare("SELECT pid, vid, path, json_extract(metadata, '$') as metadata FROM paths").all();
     expect(ppayload.length).toBe(2);
@@ -49,7 +51,7 @@ test("New version can be added multiple times", () => {
     createTables(db);
 
     let meta = { "a.txt": utils.mockMetadata["chicken"] };
-    addVersion(db, "foo", "bar", "whee", true, meta); 
+    addVersion(db, "foo", "bar", "whee", true, utils.mockSummary, meta); 
 
     let tpayload1 = utils.scanForToken(db, "cream");
     expect(tpayload1.length).toBeGreaterThan(0);
@@ -58,7 +60,7 @@ test("New version can be added multiple times", () => {
 
     // Second addition deletes all existing entries in an cascading manner.
     meta = { "aa.txt": utils.mockMetadata["marcille"] };
-    addVersion(db, "foo", "bar", "whee", true, meta);
+    addVersion(db, "foo", "bar", "whee", true, utils.mockSummary, meta);
 
     tpayload1 = utils.scanForToken(db, "cream");
     expect(tpayload1.length).toBe(0);
@@ -72,8 +74,8 @@ test("Version addition updates the latest version", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "gastly", true, {});
-    addVersion(db, "foo", "bar", "haunter", true, {});
+    addVersion(db, "foo", "bar", "gastly", true, utils.mockSummary, {});
+    addVersion(db, "foo", "bar", "haunter", true, utils.mockSummary, {});
 
     let vpayload = db.prepare("SELECT * FROM versions WHERE latest = 1").all();
     expect(vpayload.length).toBe(1);
@@ -90,8 +92,8 @@ test("Version addition responds to tokenization", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "gastly", true, { "recipe.json": utils.mockMetadata["chicken"] });
-    addVersion(db, "foo", "bar", "haunter", true, { "best_girl.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "bar", "gastly", true, utils.mockSummary, { "recipe.json": utils.mockMetadata["chicken"] });
+    addVersion(db, "foo", "bar", "haunter", true, utils.mockSummary, { "best_girl.txt": utils.mockMetadata["marcille"] });
 
     let tpayload1 = utils.scanForToken(db, "creamy");
     expect(tpayload1.length).toBeGreaterThan(0);

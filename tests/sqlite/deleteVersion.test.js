@@ -11,8 +11,8 @@ test("Versions can be deleted", () => {
     let db = Database(opath);
     createTables(db);
 
-    addVersion(db, "foo", "bar", "whee", true, { "a.txt": utils.mockMetadata["marcille"] });
-    addVersion(db, "foo", "bar", "whee2", true, { "a.txt": utils.mockMetadata["chicken"] });
+    addVersion(db, "foo", "bar", "whee", true, utils.mockSummary, { "a.txt": utils.mockMetadata["marcille"] });
+    addVersion(db, "foo", "bar", "whee2", true, utils.mockSummary, { "a.txt": utils.mockMetadata["chicken"] });
 
     let tpayload1 = utils.scanForToken(db, 'chicken');
     expect(tpayload1.length).toBeGreaterThan(0);
