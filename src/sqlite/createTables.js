@@ -15,7 +15,7 @@ export function createTables(db) {
     db.prepare("CREATE INDEX index_fields ON fields(field)").run();
 
     db.prepare(`CREATE TABLE links (pid INTEGER NOT NULL, fid INTEGER NOT NULL, tid INTEGER NOT NULL,
-    UNIQUE(pid, fid, tid),
+    UNIQUE(pid, fid, tid) ON CONFLICT IGNORE,
     FOREIGN KEY(pid) REFERENCES paths(pid) ON DELETE CASCADE)`).run();
     db.prepare("CREATE INDEX index_links ON links(tid, fid)").run();
     return;
