@@ -37,7 +37,7 @@ test("manualHandler works correctly", async () => {
     };
 
     const readSummary = (project, asset, version) => {
-        return {};
+        return utils.mockSummary;
     };
 
     const readMetadata = (project, asset, version, to_extract) => {

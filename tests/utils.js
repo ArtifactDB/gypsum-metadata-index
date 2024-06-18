@@ -58,6 +58,12 @@ export const mockMetadata = {
     }
 };
 
+export const mockSummary = { 
+    "upload_user_id": "jayaram", 
+    "upload_start": "2024-02-22T07:17:26.873Z",
+    "upload_finish": "2024-02-23T07:17:26.873Z"
+};
+
 export function scanForToken(db, token, { latest = false, partial = false } = {}) {
     const cmd = [
         "SELECT versions.project AS project, versions.asset AS asset, versions.version AS version, paths.path AS path, fields.field AS field FROM links",

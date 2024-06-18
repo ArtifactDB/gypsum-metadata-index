@@ -1,13 +1,21 @@
 import { splitIntoTokens } from "./splitIntoTokens.js";
 
-export function addVersion(db, project, asset, version, latest, metadata) {
+export function addVersion(db, project, asset, version, latest, summary, metadata) {
     const trans = db.transaction(() => {
         db.prepare("DELETE FROM versions WHERE project = ? AND asset = ? AND VERSION = ?").run(project, asset, version);
         if (latest) {
             db.prepare("UPDATE versions SET latest = 0 WHERE project = ? AND asset = ?").run(project, asset);
         }
 
-        let vinfo = db.prepare("INSERT INTO versions(project, asset, version, latest) VALUES(?, ?, ?, ?) RETURNING vid").get(project, asset, version, Number(latest));
+        let vinfo = db.prepare("INSERT INTO versions(project, asset, version, latest, user, time) VALUES(?, ?, ?, ?, ?, ?) RETURNING vid").get(
+            project, 
+            asset, 
+            version, 
+            Number(latest), 
+            summary.upload_user_id,
+            Number(new Date(summary.upload_finish))
+        );
+
         const vid = vinfo.vid;
 
         const token_stmt = db.prepare("INSERT OR IGNORE INTO tokens(token) VALUES(?)");

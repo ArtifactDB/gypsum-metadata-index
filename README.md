@@ -71,6 +71,8 @@ The table contains the following fields:
 - `asset`: text, the name of the asset.
 - `version`: text, the name of the version.
 - `latest`: integer (1 or 0), whether this version is the latest for its asset. 
+- `user`: string, the GitHub user ID of the uploading user.
+- `time`: integer, the Unix timestamp when the upload finished.
 
 Multicolumn indices are available for `(project, asset, version)` and `(latest, project, asset)`.
 

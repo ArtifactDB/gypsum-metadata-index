@@ -76,6 +76,9 @@ test("updateHandler adds versions correctly", async () => {
                 return { type: "add-version", project: "retest", asset: "stuff", version: "bar", latest: true };
             }
         },
+        (project, asset, version) => {
+            return utils.mockSummary;
+        },
         (project, asset, version, to_extract) => {
             if (project == "test") {
                 return {
@@ -157,9 +160,9 @@ test("updateHandler deletes versions correctly", async () => {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
         createTables(db);
-        addVersion(db, "test", "foo", "v1", true, {}, new Set);
-        addVersion(db, "test", "foo", "v2", true, {}, new Set);
-        addVersion(db, "test", "foo", "v3", true, {}, new Set);
+        addVersion(db, "test", "foo", "v1", true, utils.mockSummary, {}, new Set);
+        addVersion(db, "test", "foo", "v2", true, utils.mockSummary, {}, new Set);
+        addVersion(db, "test", "foo", "v3", true, utils.mockSummary, {}, new Set);
         db.close();
         all_paths[p] = opath;
     }
@@ -174,6 +177,9 @@ test("updateHandler deletes versions correctly", async () => {
         (threshold) => [logname],
         (name) => {
             return { type: "delete-version", project: "test", asset: "foo", version: "v2" };
+        },
+        (project, asset, version) => {
+            throw new Error("I shouldn't be called here");
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
@@ -204,6 +210,9 @@ test("updateHandler deletes versions correctly", async () => {
         (name) => { 
             return { type: "delete-version", project: "test", asset: "foo", version: "v3", latest: true };
         },
+        (project, asset, version) => {
+            return utils.mockSummary;
+        },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
         },
@@ -230,6 +239,9 @@ test("updateHandler deletes versions correctly", async () => {
         (name) => { 
             return { type: "delete-version", project: "test", asset: "foo", version: "v1", latest: true };
         },
+        (project, asset, version) => {
+            throw new Error("I shouldn't be called here");
+        },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
         },
@@ -253,8 +265,8 @@ test("updateHandler deletes assets correctly", async () => {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
         createTables(db);
-        addVersion(db, "test", "foo", "v1", true, {}, new Set);
-        addVersion(db, "test", "bar", "v1", true, {}, new Set);
+        addVersion(db, "test", "foo", "v1", true, utils.mockSummary, {}, new Set);
+        addVersion(db, "test", "bar", "v1", true, utils.mockSummary, {}, new Set);
         db.close();
         all_paths[p] = opath;
     }
@@ -268,6 +280,9 @@ test("updateHandler deletes assets correctly", async () => {
         (threshold) => [logname],
         (name ) => {
             return { type: "delete-asset", project: "test", asset: "bar" };
+        },
+        (project, asset, version) => {
+            throw new Error("I shouldn't be called here");
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");
@@ -294,8 +309,8 @@ test("updateHandler deletes projects correctly", async () => {
         let opath = path.join(testdir, "test" + p + ".sqlite3")
         let db = Database(opath);
         createTables(db);
-        addVersion(db, "test", "foo", "v1", true, {}, new Set);
-        addVersion(db, "retest", "foo", "v1", true, {}, new Set);
+        addVersion(db, "test", "foo", "v1", true, utils.mockSummary, {}, new Set);
+        addVersion(db, "retest", "foo", "v1", true, utils.mockSummary, {}, new Set);
         db.close();
         all_paths[p] = opath;
     }
@@ -309,6 +324,9 @@ test("updateHandler deletes projects correctly", async () => {
         (threshold) => [logname],
         (name) => {
             return { type: "delete-project", project: "test" };
+        },
+        (project, asset, version) => {
+            throw new Error("I shouldn't be called here");
         },
         (project, asset, version, to_extract) => {
             throw new Error("I shouldn't be called here");

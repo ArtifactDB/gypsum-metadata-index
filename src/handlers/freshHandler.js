@@ -81,7 +81,7 @@ export async function internal_freshVersion(db_handles, project, asset, version,
     const output = await read_metadata(project, asset, version, Object.keys(db_handles));
     for (const [e, db] of Object.entries(db_handles)) {
         try {
-            addVersion(db, project, asset, version, (latest == version), output[e]);
+            addVersion(db, project, asset, version, (latest == version), summ, output[e]);
         } catch (err) {
             throw new Error("failed to add to database '" + e + "'", { cause: err });
         } 
