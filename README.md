@@ -61,6 +61,10 @@ We consider dashes as part of the token to preserve scientific terms like gene n
 
 ## SQLite file structure
 
+The version of the SQLite file structure is stored in the `user_version` pragma as the integer `MAJOR * 1000000 + MINOR * 1000 + PATCH`.
+If the pragma has not been set or is zero, it can be assumed to be 1000000, i.e., version 1.0.0.
+The version of the file structure should correspond to the version in the [`package.json`](package.json).
+
 ### `versions` 
 
 This is a table where each row corresponds to a successfully indexed project-asset-combination.
@@ -71,8 +75,8 @@ The table contains the following fields:
 - `asset`: text, the name of the asset.
 - `version`: text, the name of the version.
 - `latest`: integer (1 or 0), whether this version is the latest for its asset. 
-- `user`: string, the GitHub user ID of the uploading user.
-- `time`: integer, the Unix timestamp when the upload finished.
+- (for `user_version >= 1.1.0`) `user`: string, the identity of the uploading user.
+- (for `user_version >= 1.1.0`) `time`: integer, the Unix timestamp when the upload finished.
 
 Multicolumn indices are available for `(project, asset, version)` and `(latest, project, asset)`.
 

@@ -18,5 +18,7 @@ export function createTables(db) {
     UNIQUE(pid, fid, tid) ON CONFLICT IGNORE,
     FOREIGN KEY(pid) REFERENCES paths(pid) ON DELETE CASCADE)`).run();
     db.prepare("CREATE INDEX index_links ON links(tid, fid)").run();
+
+    db.prepare("PRAGMA user_version = 1001000").run();
     return;
 }
