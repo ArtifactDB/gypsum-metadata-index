@@ -13,7 +13,7 @@ export function addVersion(db, project, asset, version, latest, summary, metadat
             version, 
             Number(latest), 
             summary.upload_user_id,
-            Number(new Date(summary.upload_finish))
+            Number(new Date(summary.upload_finish)) / 1000  // as Date reports things in milliseconds.
         );
 
         const vid = vinfo.vid;

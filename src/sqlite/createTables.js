@@ -1,5 +1,5 @@
 export function createTables(db) {
-    db.prepare(`CREATE TABLE versions (vid INTEGER PRIMARY KEY, project TEXT NOT NULL, asset TEXT NOT NULL, version TEXT NOT NULL, user TEXT NOT NULL, time INTEGER NOT NULL, latest INTEGER NOT NULL,
+    db.prepare(`CREATE TABLE versions (vid INTEGER PRIMARY KEY, project TEXT NOT NULL, asset TEXT NOT NULL, version TEXT NOT NULL, user TEXT NOT NULL, time REAL NOT NULL, latest INTEGER NOT NULL,
     UNIQUE(project, asset, version))`).run();
     db.prepare("CREATE INDEX index_versions1 ON versions(project, asset, version)").run();
     db.prepare("CREATE INDEX index_versions2 ON versions(latest, project, asset)").run();
